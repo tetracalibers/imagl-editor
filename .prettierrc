@@ -8,7 +8,16 @@
   "bracketSpacing": true,
   "arrowParens": "always",
   "semi": false,
-  "plugins": ["prettier-plugin-svelte"],
+  "plugins": ["prettier-plugin-svelte", "prettier-plugin-glsl"],
   "pluginSearchDirs": ["."],
-  "overrides": [{ "files": "*.svelte", "options": { "parser": "svelte" } }]
+  "overrides": [
+    {
+      "files": "*.svelte",
+      "options": { "parser": "svelte" }
+    },
+    {
+      "files": ["*.frag"],
+      "options": { "parser": "glsl-parser" }
+    }
+  ]
 }

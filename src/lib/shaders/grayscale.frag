@@ -4,9 +4,12 @@ precision highp float;
 
 #pragma glslify: toGrayscale = require('sketchgl/glsl/grayscale')
 #pragma glslify: toSepia = require('sketchgl/glsl/sepia')
+#pragma glslify: gammaToneCurve = require('sketchgl/glsl/gamma-tone-curve')
 
 uniform sampler2D uTexture0;
 uniform int uFilterMode;
+// uFilterMode == 3: ガンマ補正によるコントラスト調整
+uniform float uContrastGamma;
 
 in vec2 vTextureCoords;
 
@@ -20,7 +23,9 @@ void main() {
     ? toGrayscale(smpColor.rgb)
     : uFilterMode == 2
       ? toSepia(smpColor.rgb)
-      : smpColor.rgb;
+      : uFilterMode == 3
+        ? gammaToneCurve(smpColor.rgb, uContrastGamma)
+        : smpColor.rgb;
 
   fragColor = vec4(finalColor, 1.0);
 }

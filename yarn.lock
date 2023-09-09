@@ -1363,6 +1363,11 @@ levn@~0.3.0:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
 
+lil-gui@^0.18.2:
+  version "0.18.2"
+  resolved "https://registry.yarnpkg.com/lil-gui/-/lil-gui-0.18.2.tgz#e28a627be6a38bb80e9237817ad2c530eeb76279"
+  integrity sha512-DgdrLy3/KGC0PiQLKgOcJMPItP4xY4iWgJ9+91Zaxfr8GCTmMps05QS9w9jW7yspILlbscbquwjOwxmWnSx5Uw==
+
 lilconfig@^2.0.5:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/lilconfig/-/lilconfig-2.1.0.tgz#78e23ac89ebb7e1bfbf25b18043de756548e7f52"
@@ -1826,6 +1831,12 @@ sirv@^2.0.2:
     "@polka/url" "^1.0.0-next.20"
     mrmime "^1.0.0"
     totalist "^3.0.0"
+
+"sketchgl@git+https://github.com/tetracalibers/sketchgl.git":
+  version "0.0.0"
+  resolved "git+https://github.com/tetracalibers/sketchgl.git#93be68212c3ef2e59ee1b3e1f43fb33afd282b5c"
+  dependencies:
+    lil-gui "^0.18.2"
 
 slash@^3.0.0:
   version "3.0.0"

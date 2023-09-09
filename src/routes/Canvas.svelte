@@ -38,7 +38,7 @@
           gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
           plane.bind()
-          texture.activate(program.glProgram!, "uTexture0")
+          texture.activate(program.glProgram, "uTexture0")
           plane.draw({ primitive: "TRIANGLES" })
         }
       }

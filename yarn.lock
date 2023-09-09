@@ -1834,7 +1834,7 @@ sirv@^2.0.2:
 
 "sketchgl@git+https://github.com/tetracalibers/sketchgl.git":
   version "0.0.0"
-  resolved "git+https://github.com/tetracalibers/sketchgl.git#93be68212c3ef2e59ee1b3e1f43fb33afd282b5c"
+  resolved "git+https://github.com/tetracalibers/sketchgl.git#06e7b1c463c0387f0592da222a6692ef8d17fd16"
   dependencies:
     lil-gui "^0.18.2"
 

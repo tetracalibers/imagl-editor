@@ -2,10 +2,7 @@
 
 precision highp float;
 
-const float redScale   = 0.298912;
-const float greenScale = 0.586611;
-const float blueScale  = 0.114478;
-const vec3 monochromeScale = vec3(redScale, greenScale, blueScale);
+#pragma glslify: toGrayscale = require('sketchgl/glsl/grayscale');
 
 uniform sampler2D uTexture0;
 
@@ -16,8 +13,7 @@ out vec4 fragColor;
 void main() {
   vec4 smpColor = texture(uTexture0, vTextureCoords);
   
-  float grayColor = dot(smpColor.rgb, monochromeScale);
-  smpColor = vec4(vec3(grayColor), 1.0);
+  vec3 grayColor = toGrayscale(smpColor.rgb);
 
-  fragColor = smpColor;
+  fragColor = vec4(grayColor, 1.0);
 }

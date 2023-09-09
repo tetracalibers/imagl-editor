@@ -8,7 +8,7 @@
 
   import defaultImage from "$lib/images/tree-woods_00123.jpg"
   import vert from "$lib/shaders/image.vert?raw"
-  import frag from "$lib/shaders/grayscale.frag?raw"
+  import frag from "$lib/shaders/grayscale.frag"
 
   let canvas: HTMLCanvasElement
 

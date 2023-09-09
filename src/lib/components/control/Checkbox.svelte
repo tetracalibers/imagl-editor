@@ -1,5 +1,5 @@
 <script lang="ts">
-  let on = false
+  export let on = false
   export let onChange: (on: boolean) => void = () => {}
 </script>
 

@@ -7,11 +7,11 @@
 
   import { onMount } from "svelte"
   import Checkbox from "$lib/components/control/Checkbox.svelte"
+  import Slider from "$lib/components/control/Slider.svelte"
 
   import defaultImage from "$lib/images/tree-woods_00123.jpg"
   import vert from "$lib/shaders/image.vert?raw"
   import frag from "$lib/shaders/grayscale.frag"
-  import Slider from "$lib/components/control/Slider.svelte"
 
   let canvas: HTMLCanvasElement
 

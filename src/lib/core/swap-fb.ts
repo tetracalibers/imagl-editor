@@ -70,7 +70,7 @@ export class SwapFramebufferRenderer {
     return frameBuffer
   }
 
-  begin(program: WebGLProgram | null, name: string) {
+  bind(program: WebGLProgram | null, name: string) {
     if (!program) throw new Error("program is null")
     const gl = this._gl
     const location = gl.getUniformLocation(program, name)
@@ -82,7 +82,7 @@ export class SwapFramebufferRenderer {
     this._count = 0
   }
 
-  switch() {
+  beginPath() {
     const gl = this._gl
     if (!this._img) throw new Error("img is null")
     const { width, height } = this._img
@@ -93,13 +93,13 @@ export class SwapFramebufferRenderer {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
   }
 
-  next() {
+  endPath() {
     const gl = this._gl
     const idx = this._count % 2
     gl.bindTexture(gl.TEXTURE_2D, this._textures[idx])
   }
 
-  end() {
+  switchToCanvas() {
     const gl = this._gl
     gl.bindFramebuffer(gl.FRAMEBUFFER, null)
 

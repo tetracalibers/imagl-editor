@@ -112,10 +112,10 @@
 
         drawOnFrame() {
           plane.bind()
-          renderer.begin(program.glProgram, "uTexture0")
+          renderer.bind(program.glProgram, "uTexture0")
 
           for (const filter of ACTIVE_FILTERS) {
-            renderer.switch()
+            renderer.beginPath()
 
             uniforms.int("uFilterMode", filter)
 
@@ -124,10 +124,10 @@
 
             plane.draw({ primitive: "TRIANGLES" })
 
-            renderer.next()
+            renderer.endPath()
           }
 
-          renderer.end()
+          renderer.switchToCanvas()
 
           uniforms.int("uFilterMode", FILTER_MODE.NONE)
           plane.draw({ primitive: "TRIANGLES" })

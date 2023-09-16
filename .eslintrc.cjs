@@ -10,7 +10,8 @@ module.exports = {
   plugins: ["@typescript-eslint"],
   rules: {
     "@typescript-eslint/no-empty-function": "off",
-    "@typescript-eslint/no-explicit-any": "off"
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/ban-ts-comment": "off"
   },
   parserOptions: {
     sourceType: "module",

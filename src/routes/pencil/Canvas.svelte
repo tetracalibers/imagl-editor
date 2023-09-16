@@ -10,12 +10,16 @@
   import defaultImage from "$lib/images/autumn-leaves_00037.jpg"
   import DownloadButton from "../../components/DownloadButton.svelte"
   import UploadInput from "../../components/UploadInput.svelte"
+  import Slider from "$lib/components/control/Slider.svelte"
 
   let canvas: HTMLCanvasElement
   let download: () => void
   let upload: (img: File) => void
 
   let SketchCanvas: SketchFilter
+
+  let mainFilter: PencilFilter
+  let uPencilGamma: number
 
   const sketch: SketchFn = ({ gl, canvas }) => {
     const programForOptions = new Program(gl)
@@ -26,7 +30,8 @@
 
     const stackRenderer = new SwapFramebufferRenderer(gl, canvas)
 
-    const mainFilter = new PencilFilter(gl, canvas, plane)
+    mainFilter = new PencilFilter(gl, canvas, plane)
+    uPencilGamma = mainFilter.gamma
 
     gl.clearColor(1.0, 1.0, 1.0, 1.0)
     gl.clearDepth(1.0)
@@ -67,3 +72,13 @@
 <DownloadButton onClick={download} />
 <UploadInput onChange={upload} />
 <canvas bind:this={canvas} />
+
+<div>
+  線の薄さ<Slider
+    bind:value={uPencilGamma}
+    onChange={(v) => (mainFilter.gamma = v)}
+    min={0}
+    max={1}
+    step={0.01}
+  />
+</div>

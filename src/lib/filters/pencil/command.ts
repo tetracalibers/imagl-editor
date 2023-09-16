@@ -45,6 +45,10 @@ export class PencilFilter {
     this._uPencilGamma = value
   }
 
+  get gamma() {
+    return this._uPencilGamma
+  }
+
   get resize() {
     return this._localRenderer.resize
   }

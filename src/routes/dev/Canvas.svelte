@@ -102,6 +102,8 @@
       gl.clearDepth(1.0)
 
       return {
+        resize: [renderer.resize],
+
         preloaded(texture) {
           renderer.init(texture)
         },

@@ -90,6 +90,11 @@ export class SwapFramebufferRenderer {
     gl.bindFramebuffer(gl.FRAMEBUFFER, this._framebuffers[idx])
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+
+    return {
+      inBuf: this._framebuffers[idx],
+      outBuf: this._framebuffers[(idx + 1) % 2]
+    }
   }
 
   endPath() {

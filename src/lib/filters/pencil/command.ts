@@ -4,7 +4,6 @@ import vert from "../../shaders/image.vert?raw"
 import frag_1 from "./1.frag?raw"
 import frag_2 from "./2.frag?raw"
 import type { CanvasCoverPolygon } from "sketchgl/geometry"
-import type { ImageTexture } from "sketchgl/texture"
 
 export class PencilFilter {
   private _gl: WebGL2RenderingContext

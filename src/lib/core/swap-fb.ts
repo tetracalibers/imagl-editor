@@ -85,12 +85,10 @@ export class SwapFramebufferRenderer {
 
   beginPath() {
     const gl = this._gl
-    if (!this._img) throw new Error("img is null")
-    const { width, height } = this._img
     this._count++
     const idx = this._count % 2
     gl.bindFramebuffer(gl.FRAMEBUFFER, this._framebuffers[idx])
-    gl.viewport(0, 0, width, height)
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
   }
 
@@ -106,5 +104,18 @@ export class SwapFramebufferRenderer {
 
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+  }
+
+  resize = () => {
+    const gl = this._gl
+    const { width, height } = this._canvas
+
+    gl.bindTexture(gl.TEXTURE_2D, this._textures[0])
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
+
+    gl.bindTexture(gl.TEXTURE_2D, this._textures[1])
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
+
+    gl.bindTexture(gl.TEXTURE_2D, null)
   }
 }

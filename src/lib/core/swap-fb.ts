@@ -73,6 +73,7 @@ export class SwapFramebufferRenderer {
   bind(program: WebGLProgram | null, name: string) {
     if (!program) throw new Error("program is null")
     const gl = this._gl
+    gl.useProgram(program)
     const location = gl.getUniformLocation(program, name)
 
     gl.activeTexture(gl.TEXTURE0 + 0)

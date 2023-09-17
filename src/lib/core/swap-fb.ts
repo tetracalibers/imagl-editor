@@ -8,6 +8,7 @@ export class SwapFramebufferRenderer {
   private _framebuffers: [WebGLFramebuffer | null, WebGLFramebuffer | null] = [null, null]
   private _renderbuffers: [WebGLRenderbuffer | null, WebGLRenderbuffer | null] = [null, null]
 
+  private _prevIdx = 0
   private _img: HTMLImageElement | null = null
 
   private _count
@@ -101,6 +102,17 @@ export class SwapFramebufferRenderer {
     this._count = 0
   }
 
+  bindPrev(program: WebGLProgram | null, name: string) {
+    if (!program) throw new Error("program is null")
+    const gl = this._gl
+    gl.useProgram(program)
+    const location = gl.getUniformLocation(program, name)
+
+    gl.activeTexture(gl.TEXTURE0 + this._prevIdx)
+    gl.bindTexture(gl.TEXTURE_2D, this._textures[this._prevIdx])
+    gl.uniform1i(location, this._prevIdx)
+  }
+
   beginPath() {
     const gl = this._gl
     this._count++
@@ -118,6 +130,7 @@ export class SwapFramebufferRenderer {
   endPath() {
     const gl = this._gl
     const idx = this._count % 2
+    this._prevIdx = idx
     gl.bindTexture(gl.TEXTURE_2D, this._textures[idx])
   }
 

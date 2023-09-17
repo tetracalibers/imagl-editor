@@ -23,9 +23,12 @@ vec3 xGaussSmooth(sampler2D tex, vec2 uv, vec2 texelSize, float filterSize, floa
   float h = (filterSize - 1.0) / 2.0;
 
   for (float i = -h; i <= h; ++i) {
-    float weight = gauss(i, sigma);
+    float weight = gauss(i, 5.0);
     vec2 offset = vec2(i * texelSize.x, 0.0);
     vec3 color = texture(tex, uv + offset).rgb;
+    vec3 color2 = texture(tex, uv).rgb;
+    float d = distance(color, color2);
+    weight *= gauss(d, sigma);
     weights += weight;
     grad += color * weight;
   }
@@ -41,9 +44,12 @@ vec3 yGaussSmooth(sampler2D tex, vec2 uv, vec2 texelSize, float filterSize, floa
   float h = (filterSize - 1.0) / 2.0;
 
   for (float i = -h; i <= h; ++i) {
-    float weight = gauss(i, sigma);
+    float weight = gauss(i, 5.0);
     vec2 offset = vec2(0.0, i * texelSize.y);
     vec3 color = texture(tex, uv + offset).rgb;
+    vec3 color2 = texture(tex, uv).rgb;
+    float d = distance(color, color2);
+    weight *= gauss(d, sigma);
     weights += weight;
     grad += color * weight;
   }

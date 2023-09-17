@@ -6,7 +6,7 @@ type U = "uBlurSigma"
 export class BlurFilter implements FilterCommand<U> {
   modeIdx: number
   uniforms = {
-    uBlurSigma: 2.5
+    uBlurSigma: 0.25
   }
   active = false
 

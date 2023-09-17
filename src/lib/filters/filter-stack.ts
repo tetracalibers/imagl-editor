@@ -13,7 +13,8 @@ export const getObjectKeys = <T extends { [key: string]: unknown }>(obj: T): (ke
 
 export class FilterStack<C extends string, U extends string> {
   private _commands: Map<C, FilterCommand<U>>
-  private _actives: Map<C, FilterCommand<U>>
+  private _activesBefore: Map<C, FilterCommand<U>>
+  private _activesAfter: Map<C, FilterCommand<U>>
   private _uniforms?: Set<U>
 
   constructor(commands: Record<C, FilterCommand<U>>) {
@@ -29,7 +30,8 @@ export class FilterStack<C extends string, U extends string> {
       })
     })
 
-    this._actives = new Map()
+    this._activesBefore = new Map()
+    this._activesAfter = new Map()
   }
 
   initUniforms(
@@ -43,23 +45,25 @@ export class FilterStack<C extends string, U extends string> {
     return uniforms
   }
 
-  active(id: C) {
+  active(id: C, { before = false } = {}) {
     const command = this._commands.get(id)
-    if (command) {
-      command.active = true
-      this._actives.set(id, command)
-    }
+    if (!command) return
+    command.active = true
+    before ? this._activesBefore.set(id, command) : this._activesAfter.set(id, command)
   }
 
-  deactive(id: C) {
+  deactive(id: C, { before = false } = {}) {
     const command = this._commands.get(id)
-    if (command) {
-      command.active = false
-      this._actives.delete(id)
-    }
+    if (!command) return
+    command.active = false
+    before ? this._activesBefore.delete(id) : this._activesAfter.delete(id)
   }
 
-  get activeFilters() {
-    return this._actives
+  get activeBeforeFilters() {
+    return this._activesBefore
+  }
+
+  get activeAfterFilters() {
+    return this._activesAfter
   }
 }

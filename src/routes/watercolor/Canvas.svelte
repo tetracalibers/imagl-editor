@@ -70,7 +70,7 @@
         plane.draw({ primitive: "TRIANGLES" })
         stackRenderer.endPath()
 
-        filterStack.activeFilters.forEach((filter) => {
+        filterStack.activeBeforeFilters.forEach((filter) => {
           stackRenderer.beginPath()
           uniforms && filter.applyUniforms(uniforms)
           plane.draw({ primitive: "TRIANGLES" })
@@ -78,6 +78,16 @@
         })
 
         mainFilter.apply(programForOptions, stackRenderer)
+
+        programForOptions.activate()
+        stackRenderer.bindPrev(programForOptions.glProgram, "uMainTex")
+
+        filterStack.activeAfterFilters.forEach((filter) => {
+          stackRenderer.beginPath()
+          uniforms && filter.applyUniforms(uniforms)
+          plane.draw({ primitive: "TRIANGLES" })
+          stackRenderer.endPath()
+        })
 
         stackRenderer.switchToCanvas()
         plane.draw({ primitive: "TRIANGLES" })
@@ -130,9 +140,9 @@
     bind:on={contrast.active}
     onChange={(on) => {
       if (on) {
-        filterStack.active("contrast")
+        filterStack.active("contrast", { before: true })
       } else {
-        filterStack.deactive("contrast")
+        filterStack.deactive("contrast", { before: true })
       }
     }}
   >

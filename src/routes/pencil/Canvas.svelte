@@ -60,7 +60,7 @@
         const { outBuf } = stackRenderer.beginPath()
         mainFilter.apply(programForOptions, outBuf)
 
-        filterStack.activeFilters.forEach((filter) => {
+        filterStack.activeAfterFilters.forEach((filter) => {
           stackRenderer.beginPath()
           uniforms && filter.applyUniforms(uniforms)
           plane.draw({ primitive: "TRIANGLES" })

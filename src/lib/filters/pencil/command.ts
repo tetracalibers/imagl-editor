@@ -9,7 +9,7 @@ export class PencilFilter {
   private _gl: WebGL2RenderingContext
   private _path1Uniforms: Uniforms<"uPencilGamma">
   private _mrtRenderer: UseMRT
-  private _localProgram: Program
+  private _path2Program: Program
   private _screen: CanvasCoverPolygon
 
   private _uPencilGamma = 0.5
@@ -20,8 +20,8 @@ export class PencilFilter {
 
     this._mrtRenderer = new UseMRT(gl, canvas, vert, frag_1, { texCount: 2, texUnitStart: 1 })
 
-    this._localProgram = new Program(gl)
-    this._localProgram.attach(vert, frag_2)
+    this._path2Program = new Program(gl)
+    this._path2Program.attach(vert, frag_2)
 
     this._path1Uniforms = new Uniforms(gl, ["uPencilGamma"])
     this._path1Uniforms.init(this._mrtRenderer.glProgramForMTR)
@@ -29,15 +29,15 @@ export class PencilFilter {
 
   apply(out: WebGLFramebuffer | null) {
     const r = this._mrtRenderer
-    const program = this._localProgram
+    const path2Program = this._path2Program
 
     r.switchToMTR()
     this._path1Uniforms.float("uPencilGamma", this._uPencilGamma)
     this._screen.draw({ primitive: "TRIANGLES" })
 
-    r.switchToNextTexture(program, out)
-    this._mrtRenderer.useTexture(program, { idx: 0, name: "uPosterizeTex" })
-    this._mrtRenderer.useTexture(program, { idx: 1, name: "uEdgeTex" })
+    r.switchToNextTexture(path2Program, out)
+    this._mrtRenderer.useTexture(path2Program, { idx: 0, name: "uPosterizeTex" })
+    this._mrtRenderer.useTexture(path2Program, { idx: 1, name: "uEdgeTex" })
     this._screen.draw({ primitive: "TRIANGLES" })
   }
 

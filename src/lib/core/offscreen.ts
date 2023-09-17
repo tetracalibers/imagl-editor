@@ -89,6 +89,12 @@ export class UseFramebuffer {
     gl.uniform1i(location, this._texUnitStart)
   }
 
+  switchToOffscreen(program: Program) {
+    const gl = this._gl
+    gl.bindFramebuffer(gl.FRAMEBUFFER, this._framebuffer)
+    program.activate()
+  }
+
   switchToNextTexture(program: Program, out: WebGLFramebuffer | null) {
     const gl = this._gl
     gl.bindFramebuffer(gl.FRAMEBUFFER, out)

@@ -119,7 +119,7 @@ export class VoronoiWatercolorFilter {
     stack.beginPath()
     mixProgram.activate()
     offR.useTexture(mixProgram, { name: "uVoronoiTex" })
-    stack.bind(mixProgram.glProgram, "uOriginalTex")
+    stack.bindPrev(mixProgram.glProgram, "uOriginalTex")
     this._mixUniforms.float("uMixRatio", this._uMixRatio)
     screen.draw({ primitive: "TRIANGLES" })
     stack.endPath()

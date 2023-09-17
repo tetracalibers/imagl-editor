@@ -59,11 +59,14 @@
         mainFilter.setup(canvas.width, canvas.height)
       },
       drawOnFrame() {
-        mainFilter.apply(programForOptions, stackRenderer)
+        plane.bind()
+        stackRenderer.bind(programForOptions.glProgram, "uMainTex")
 
-        programForOptions.activate()
+        stackRenderer.beginPath()
         uniforms && uniforms.int("uFilterMode", 0)
         uniforms && uniforms.float("uAlpha", uAlpha)
+        plane.draw({ primitive: "TRIANGLES" })
+        stackRenderer.endPath()
 
         filterStack.activeFilters.forEach((filter) => {
           stackRenderer.beginPath()
@@ -71,6 +74,8 @@
           plane.draw({ primitive: "TRIANGLES" })
           stackRenderer.endPath()
         })
+
+        mainFilter.apply(programForOptions, stackRenderer)
 
         stackRenderer.switchToCanvas()
         plane.draw({ primitive: "TRIANGLES" })

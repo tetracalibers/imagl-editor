@@ -15,7 +15,7 @@
     {max}
     {step}
     {disabled}
-    on:change={(e) => onChange(e.currentTarget.valueAsNumber)}
+    on:input={(e) => onChange(e.currentTarget.valueAsNumber)}
   />
   <slot />
 </label>

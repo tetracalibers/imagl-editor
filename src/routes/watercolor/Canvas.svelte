@@ -24,6 +24,8 @@
   let mainFilter: VoronoiWatercolorFilter
   let uMixRatio: number
 
+  let uAlpha = 1.0
+
   const blurX = new BlurFilter({ modeIdx: 1 })
   const blurY = new BlurFilter({ modeIdx: 2 })
 
@@ -34,7 +36,7 @@
     programForOptions.attach(vert, frag_options)
     programForOptions.activate()
 
-    const uniforms = filterStack.initUniforms(gl, programForOptions.glProgram)
+    const uniforms = filterStack.initUniforms(gl, programForOptions.glProgram, ["uAlpha"])
 
     const plane = new CanvasCoverPolygon(gl)
     plane.setLocations({ vertices: 0, uv: 1 })
@@ -48,7 +50,7 @@
     gl.enable(gl.BLEND)
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 
-    gl.clearColor(1.0, 0.0, 0.0, 1.0)
+    gl.clearColor(1.0, 1.0, 1.0, 1.0)
     gl.clearDepth(1.0)
 
     return {
@@ -61,6 +63,7 @@
 
         programForOptions.activate()
         uniforms && uniforms.int("uFilterMode", 0)
+        uniforms && uniforms.float("uAlpha", uAlpha)
 
         filterStack.activeFilters.forEach((filter) => {
           stackRenderer.beginPath()
@@ -109,6 +112,10 @@
     max={1}
     step={0.01}
   />
+</div>
+
+<div>
+  透明度<Slider bind:value={uAlpha} onChange={(v) => (uAlpha = v)} min={0} max={1} step={0.01} />
 </div>
 
 <div>

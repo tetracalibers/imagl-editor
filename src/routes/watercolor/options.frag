@@ -7,6 +7,7 @@ out vec4 fragColor;
 
 uniform sampler2D uMainTex;
 uniform int uFilterMode;
+uniform float uAlpha;
 uniform float uBlurSigma;
 
 // 正規分布（ガウス分布）
@@ -70,5 +71,5 @@ void main() {
       ? yGaussSmooth(uMainTex, uv, texelSize, 9.0, uBlurSigma)
       : smpColor.rgb;
 
-  fragColor = vec4(finalColor.rgb, smpColor.a);
+  fragColor = vec4(finalColor.rgb, uAlpha);
 }

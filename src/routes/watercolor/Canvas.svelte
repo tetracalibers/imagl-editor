@@ -14,6 +14,7 @@
   import { BlurFilter } from "$lib/filters/blur/command"
   import Checkbox from "$lib/components/control/Checkbox.svelte"
   import { VoronoiWatercolorFilter } from "$lib/filters/watercolor/command"
+  import { ContrastFilter } from "$lib/filters/contrast/command"
 
   let canvas: HTMLCanvasElement
   let download: () => void
@@ -28,8 +29,9 @@
 
   const blurX = new BlurFilter({ modeIdx: 1 })
   const blurY = new BlurFilter({ modeIdx: 2 })
+  const contrast = new ContrastFilter({ modeIdx: 3 })
 
-  const filterStack = new FilterStack({ blurX, blurY })
+  const filterStack = new FilterStack({ blurX, blurY, contrast })
 
   const sketch: SketchFn = ({ gl, canvas }) => {
     const programForOptions = new Program(gl)
@@ -121,6 +123,28 @@
 
 <div>
   透明度<Slider bind:value={uAlpha} onChange={(v) => (uAlpha = v)} min={0} max={1} step={0.01} />
+</div>
+
+<div>
+  <Checkbox
+    bind:on={contrast.active}
+    onChange={(on) => {
+      if (on) {
+        filterStack.active("contrast")
+      } else {
+        filterStack.deactive("contrast")
+      }
+    }}
+  >
+    Contrast
+  </Checkbox>
+  <Slider
+    bind:value={contrast.uContrastGamma}
+    disabled={!contrast.active}
+    min={0.1}
+    max={10}
+    step={0.1}
+  />
 </div>
 
 <div>

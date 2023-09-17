@@ -6,6 +6,7 @@ export class SwapFramebufferRenderer {
   private _originalTexture: WebGLTexture | null = null
   private _textures: [WebGLTexture | null, WebGLTexture | null] = [null, null]
   private _framebuffers: [WebGLFramebuffer | null, WebGLFramebuffer | null] = [null, null]
+  private _renderbuffers: [WebGLRenderbuffer | null, WebGLRenderbuffer | null] = [null, null]
 
   private _img: HTMLImageElement | null = null
 
@@ -18,31 +19,36 @@ export class SwapFramebufferRenderer {
   }
 
   init(source: ImageTexture) {
-    const gl = this._gl
     this._originalTexture = source.glTexture
     this._img = source.img
 
-    const inTexture = this.getInitialColorTexture()
-    if (!inTexture) {
-      throw new Error("Failed to initialize textures")
-    }
-    gl.bindTexture(gl.TEXTURE_2D, inTexture)
-    const inFramebuffer = this.getInitialFramebuffer()
-    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, inTexture, 0)
+    const forIn = this.getInitials()
+    const forOut = this.getInitials()
+
+    this._textures = [forIn.texture, forOut.texture]
+    this._framebuffers = [forIn.framebuffer, forOut.framebuffer]
+    this._renderbuffers = [forIn.renderbuffer, forOut.renderbuffer]
+  }
+
+  private getInitials() {
+    const gl = this._gl
+    const framebuffer = this.getInitialFramebuffer()
+
+    const texture = this.getInitialColorTexture()
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0)
+
+    const renderbuffer = this.getInitialRenderBuffer()
+    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderbuffer)
+
     gl.bindTexture(gl.TEXTURE_2D, null)
+    gl.bindRenderbuffer(gl.RENDERBUFFER, null)
     gl.bindFramebuffer(gl.FRAMEBUFFER, null)
 
-    const outTexture = this.getInitialColorTexture()
-    if (!outTexture) {
-      throw new Error("Failed to initialize textures")
+    return {
+      texture,
+      framebuffer,
+      renderbuffer
     }
-    const outFramebuffer = this.getInitialFramebuffer()
-    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, outTexture, 0)
-    gl.bindTexture(gl.TEXTURE_2D, null)
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null)
-
-    this._textures = [inTexture, outTexture]
-    this._framebuffers = [inFramebuffer, outFramebuffer]
   }
 
   private getInitialColorTexture() {
@@ -59,6 +65,18 @@ export class SwapFramebufferRenderer {
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
 
     return texture
+  }
+
+  protected getInitialRenderBuffer() {
+    const gl = this._gl
+    if (!this._img) throw new Error("img is null")
+    const { width, height } = this._img
+
+    const renderBuffer = gl.createRenderbuffer()
+    gl.bindRenderbuffer(gl.RENDERBUFFER, renderBuffer)
+    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, width, height)
+
+    return renderBuffer
   }
 
   private getInitialFramebuffer() {
@@ -111,16 +129,31 @@ export class SwapFramebufferRenderer {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
   }
 
-  resize = () => {
+  private resizeTexture(texture: WebGLTexture | null, width: number, height: number) {
     const gl = this._gl
+    gl.bindTexture(gl.TEXTURE_2D, texture)
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
+    gl.bindTexture(gl.TEXTURE_2D, null)
+  }
+
+  private resizeRenderbuffer(
+    renderbuffer: WebGLRenderbuffer | null,
+    width: number,
+    height: number
+  ) {
+    const gl = this._gl
+    gl.bindRenderbuffer(gl.RENDERBUFFER, renderbuffer)
+    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, width, height)
+    gl.bindRenderbuffer(gl.RENDERBUFFER, null)
+  }
+
+  resize = () => {
     const { width, height } = this._canvas
 
-    gl.bindTexture(gl.TEXTURE_2D, this._textures[0])
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
+    this.resizeTexture(this._textures[0], width, height)
+    this.resizeRenderbuffer(this._renderbuffers[0], width, height)
 
-    gl.bindTexture(gl.TEXTURE_2D, this._textures[1])
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
-
-    gl.bindTexture(gl.TEXTURE_2D, null)
+    this.resizeTexture(this._textures[1], width, height)
+    this.resizeRenderbuffer(this._renderbuffers[1], width, height)
   }
 }

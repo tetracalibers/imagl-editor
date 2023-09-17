@@ -32,9 +32,13 @@ export class FilterStack<C extends string, U extends string> {
     this._actives = new Map()
   }
 
-  initUniforms(gl: WebGL2RenderingContext, program: WebGLProgram | null) {
+  initUniforms(
+    gl: WebGL2RenderingContext,
+    program: WebGLProgram | null,
+    moreUniforms: string[] = []
+  ) {
     if (!this._uniforms) return
-    const uniforms = new Uniforms(gl, ["uFilterMode", ...this._uniforms])
+    const uniforms = new Uniforms(gl, ["uFilterMode", ...this._uniforms, ...moreUniforms])
     uniforms.init(program)
     return uniforms
   }

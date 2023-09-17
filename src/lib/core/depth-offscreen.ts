@@ -20,9 +20,10 @@ export class UseDepthFramebuffer {
     this.bindColorTexture()
   }
 
-  resize = () => {
+  resize = (_width?: number, _height?: number) => {
     const gl = this._gl
-    const { width, height } = this._canvas
+    const width = _width ?? this._canvas.width
+    const height = _height ?? this._canvas.height
 
     this.resizeColorTexture(width, height)
 

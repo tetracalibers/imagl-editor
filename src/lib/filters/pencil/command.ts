@@ -7,7 +7,7 @@ import type { CanvasCoverPolygon } from "sketchgl/geometry"
 
 export class PencilFilter {
   private _gl: WebGL2RenderingContext
-  private _localUniforms: Uniforms<"uPencilGamma">
+  private _path1Uniforms: Uniforms<"uPencilGamma">
   private _mrtRenderer: UseMRT
   private _localProgram: Program
   private _screen: CanvasCoverPolygon
@@ -23,8 +23,8 @@ export class PencilFilter {
     this._localProgram = new Program(gl)
     this._localProgram.attach(vert, frag_2)
 
-    this._localUniforms = new Uniforms(gl, ["uPencilGamma"])
-    this._localUniforms.init(this._mrtRenderer.glProgramForMTR)
+    this._path1Uniforms = new Uniforms(gl, ["uPencilGamma"])
+    this._path1Uniforms.init(this._mrtRenderer.glProgramForMTR)
   }
 
   apply(out: WebGLFramebuffer | null) {
@@ -32,7 +32,7 @@ export class PencilFilter {
     const program = this._localProgram
 
     r.switchToMTR()
-    this._localUniforms.float("uPencilGamma", this._uPencilGamma)
+    this._path1Uniforms.float("uPencilGamma", this._uPencilGamma)
     this._screen.draw({ primitive: "TRIANGLES" })
 
     r.switchToNextTexture(program, out)

@@ -263,6 +263,8 @@ void main() {
   vec3 originalColor = texture(uMainTex, uv).rgb;
   vec3 vrRandomColor = texture(uVrRandomTex, uv).rgb;
   vec3 vrOriginalColor = texture(uVrOriginalTex, uv).rgb;
+
+  originalColor = smooth3x3(uMainTex, texelSize, uv);
   
   vec3 edge = fwidth(vrRandomColor);
   edge.r = (edge.r + edge.g + edge.b) / 3.0;
@@ -272,12 +274,12 @@ void main() {
   float threshold = uShowVoronoiStroke ? 0.01 : 1.0;
   vec3 glassColor = edge.r > threshold
     ? mix(vec3(0.0), borderColor, dot(originalColor, vec3(1.0)))
-    : mix(vrOriginalColor, originalColor, uVoronoiMixRatio);
+    : mix(vrOriginalColor, originalColor, dot(originalColor, vec3(1.0)) * uVoronoiMixRatio);
   
   // uVrOriginalTexをぼかす
   vec3 blurred = smooth3x3(uVrOriginalTex, texelSize, uv);
   
-  vec3 mixedColor = mix(vec3(0.2), vrRandomColor, uRandomMixRatio);
+  vec3 mixedColor = mix(vec3(0.0), vrRandomColor, uRandomMixRatio);
   
   // ランダムカラーを合成
   glassColor = overlay(glassColor, mixedColor);

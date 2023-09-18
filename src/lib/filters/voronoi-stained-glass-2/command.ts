@@ -18,11 +18,11 @@ export class VoronoiStainedGlassFilter {
     "uVoronoiMixRatio" | "uRandomMixRatio" | "uGlowScale" | "uShowVoronoiStroke"
   >
 
-  private _uVoronoiSiteCount = 40
+  private _uVoronoiSiteCount = 30
   private _uVoronoiMixRatio = 0.8
   private _uRandomMixRatio = 0.5
   private _uGlowScale = 0.3
-  private _uShowVoronoiStroke = true
+  private _uShowVoronoiStroke = false
 
   constructor(gl: WebGL2RenderingContext, canvas: HTMLCanvasElement, screen: CanvasCoverPolygon) {
     this._gl = gl

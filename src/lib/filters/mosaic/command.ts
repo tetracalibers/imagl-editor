@@ -4,14 +4,14 @@ import type { CanvasCoverPolygon } from "sketchgl/geometry"
 import type { Program } from "sketchgl/program"
 
 export class MosaicFilter {
-  private _gl: WebGL2RenderingContext
-  private _canvas: HTMLCanvasElement
-  private _useFramebuffer: UseDepthFramebuffer
-  private _screen: CanvasCoverPolygon
+  protected _gl: WebGL2RenderingContext
+  protected _canvas: HTMLCanvasElement
+  protected _useFramebuffer: UseDepthFramebuffer
+  protected _screen: CanvasCoverPolygon
 
-  private _width = 0
-  private _height = 0
-  private _scale = 12
+  protected _width = 0
+  protected _height = 0
+  protected _scale = 12
 
   active = false
 
@@ -36,14 +36,14 @@ export class MosaicFilter {
     stack.endPath()
   }
 
-  private initSmallOffcanvas() {
+  protected initSmallOffcanvas() {
     const gl = this._gl
     gl.viewport(0, 0, this._width, this._height)
     gl.bindFramebuffer(gl.FRAMEBUFFER, this._useFramebuffer.framebuffer)
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
   }
 
-  private calcOffcanvasSize(rate: number) {
+  protected calcOffcanvasSize(rate: number) {
     const canvas = this._canvas
     const size = Math.min(canvas.width, canvas.height)
     const step = Math.ceil(size / rate)

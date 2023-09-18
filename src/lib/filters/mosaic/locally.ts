@@ -73,4 +73,16 @@ export class LocallyMosaicFilter extends MosaicFilter {
   get resizes() {
     return [...super.resizes, this._usePrevFramebuffer.resize]
   }
+
+  set center([x, y]: [number, number]) {
+    this._uCenter = [x, y]
+  }
+
+  set radius(r: number) {
+    this._uRadius = r
+  }
+
+  get radius() {
+    return this._uRadius
+  }
 }

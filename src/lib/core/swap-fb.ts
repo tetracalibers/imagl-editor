@@ -108,9 +108,9 @@ export class SwapFramebufferRenderer {
     gl.useProgram(program)
     const location = gl.getUniformLocation(program, name)
 
-    gl.activeTexture(gl.TEXTURE0 + this._prevIdx)
+    gl.activeTexture(gl.TEXTURE0 + this._prevIdx + 1)
     gl.bindTexture(gl.TEXTURE_2D, this._textures[this._prevIdx])
-    gl.uniform1i(location, this._prevIdx)
+    gl.uniform1i(location, this._prevIdx + 1)
   }
 
   beginPath() {

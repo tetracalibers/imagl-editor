@@ -233,17 +233,19 @@ void main() {
   vec3 borderColor = vec3(0.5);
   
   float threshold = uShowVoronoiStroke ? 0.01 : 1.0;
-  vec3 mixedColor = edge.r > threshold
+  vec3 glassColor = edge.r > threshold
     ? borderColor
     : mix(vrOriginalColor, originalColor, uVoronoiMixRatio);
   
   // uVrOriginalTexをぼかす
   vec3 blurred = smooth3x3(uVrOriginalTex, texelSize, uv);
   
-  // ランダムカラーを合成
-  mixedColor *= mix(vec3(1.0), vrRandomColor, uRandomMixRatio);
-  // グロー効果
-  mixedColor += blurred * uGlowScale;
+  vec3 mixedColor = mix(vec3(1.0), vrRandomColor, uRandomMixRatio);
   
-  fragColor = vec4(mixedColor, 1.0);
+  // ランダムカラーを合成
+  glassColor *= mixedColor;
+  // グロー効果
+  glassColor += blurred * uGlowScale;
+  
+  fragColor = vec4(glassColor, 1.0);
 }

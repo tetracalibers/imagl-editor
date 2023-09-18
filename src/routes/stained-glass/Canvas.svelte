@@ -15,6 +15,8 @@
   import Checkbox from "$lib/components/control/Checkbox.svelte"
   import { ContrastFilter } from "$lib/filters/contrast/command"
   import { VoronoiStainedGlassFilter } from "$lib/filters/voronoi-stained-glass/command"
+  import { LocallyFilterMask } from "$lib/filters/locally/locally"
+  import { Drag } from "$lib/interactive/drag"
 
   let canvas: HTMLCanvasElement
   let download: () => void
@@ -29,6 +31,12 @@
   let uGlowScale: number
 
   let uAlpha = 0.9
+
+  let locallyMask: LocallyFilterMask
+  let mainRadius: number
+  let editing = {
+    main: false
+  }
 
   const blurX = new BlurFilter({ modeIdx: 1 })
   const blurY = new BlurFilter({ modeIdx: 2 })
@@ -54,6 +62,9 @@
     uRandomMixRatio = mainFilter.uRandomMixRatio
     uGlowScale = mainFilter.uGlowScale
 
+    locallyMask = new LocallyFilterMask(gl, canvas, plane)
+    mainRadius = locallyMask.radius
+
     gl.clearColor(1.0, 1.0, 1.0, 1.0)
     gl.clearDepth(1.0)
 
@@ -71,7 +82,9 @@
         plane.draw({ primitive: "TRIANGLES" })
         stackRenderer.endPath()
 
+        locallyMask.saveBase(programForOptions, stackRenderer)
         mainFilter.apply(programForOptions, stackRenderer)
+        locallyMask.applyMask(programForOptions, stackRenderer)
 
         filterStack.activeAfterFilters.forEach((filter) => {
           stackRenderer.beginPath()
@@ -85,7 +98,7 @@
         uniforms && uniforms.float("uAlpha", uAlpha)
         plane.draw({ primitive: "TRIANGLES" })
       },
-      resize: [...mainFilter.resizes, stackRenderer.resize]
+      resize: [...mainFilter.resizes, ...locallyMask.resizes, stackRenderer.resize]
     }
   }
 
@@ -100,6 +113,13 @@
     download = SketchCanvas.download
     upload = SketchCanvas.changeImage
 
+    const watchDrag = new Drag(canvas)
+    watchDrag.onMove = (pos) => {
+      if (editing.main) {
+        locallyMask.center = pos
+      }
+    }
+
     await SketchCanvas.start(defaultImage)
   })
 </script>
@@ -107,6 +127,31 @@
 <DownloadButton onClick={download} />
 <UploadInput onChange={upload} />
 <canvas bind:this={canvas} />
+
+<div>
+  <Checkbox
+    bind:on={editing.main}
+    onChange={(on) => {
+      if (on) {
+        editing.main = true
+      } else {
+        editing.main = false
+      }
+    }}
+  >
+    移動モード
+  </Checkbox>
+
+  半径<Slider
+    bind:value={mainRadius}
+    onChange={(v) => {
+      locallyMask.radius = v
+    }}
+    min={0}
+    max={1}
+    step={0.01}
+  />
+</div>
 
 <div>
   モザイクの強さ<Slider

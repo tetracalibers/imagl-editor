@@ -5,6 +5,7 @@ import frag_1 from "./1.frag?raw"
 import frag_2 from "./2.frag?raw"
 import type { CanvasCoverPolygon } from "sketchgl/geometry"
 import { UseFramebuffer } from "$lib/core/offscreen"
+import type { SwapFramebufferRenderer } from "$lib/core/swap-fb"
 
 export class PencilFilter {
   private _gl: WebGL2RenderingContext
@@ -30,12 +31,13 @@ export class PencilFilter {
     this._path1Uniforms.init(this._mrtRenderer.glProgramForMTR)
   }
 
-  apply(outProgram: Program, outFBuffer: WebGLFramebuffer | null) {
+  apply(outProgram: Program, stack: SwapFramebufferRenderer) {
     const mrtR = this._mrtRenderer
     const offR = this._offRenderer
     const path2Program = this._path2Program
 
     mrtR.switchToMTR()
+    stack.bind(mrtR.glProgramForMTR, "uOriginalTex")
     this._path1Uniforms.float("uPencilGamma", this._uPencilGamma)
     this._screen.draw({ primitive: "TRIANGLES" })
 
@@ -44,9 +46,11 @@ export class PencilFilter {
     mrtR.useTexture(path2Program, { idx: 1, name: "uEdgeTex" })
     this._screen.draw({ primitive: "TRIANGLES" })
 
-    offR.switchToNextTexture(outProgram, outFBuffer)
+    stack.beginPath()
+    outProgram.activate()
     offR.useTexture(outProgram, { name: "uMainTex" })
     this._screen.draw({ primitive: "TRIANGLES" })
+    stack.endPath()
   }
 
   set gamma(value: number) {
@@ -59,9 +63,5 @@ export class PencilFilter {
 
   get resizes() {
     return [this._offRenderer.resize, this._mrtRenderer.resize]
-  }
-
-  get glProgram() {
-    return this._mrtRenderer.glProgramForMTR
   }
 }

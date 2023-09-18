@@ -14,6 +14,8 @@
   import { FilterStack } from "$lib/filters/filter-stack"
   import { BlurFilter } from "$lib/filters/blur/command"
   import Checkbox from "$lib/components/control/Checkbox.svelte"
+  import { LocallyFilterMask } from "$lib/filters/locally/locally"
+  import { Drag } from "$lib/interactive/drag"
 
   let canvas: HTMLCanvasElement
   let download: () => void
@@ -23,6 +25,12 @@
 
   let mainFilter: PencilFilter
   let uPencilGamma: number
+
+  let locallyMask: LocallyFilterMask
+  let mainRadius: number
+  let editing = {
+    main: false
+  }
 
   const blurX = new BlurFilter({ modeIdx: 1 })
   const blurY = new BlurFilter({ modeIdx: 2 })
@@ -41,6 +49,9 @@
 
     const stackRenderer = new SwapFramebufferRenderer(gl, canvas)
 
+    locallyMask = new LocallyFilterMask(gl, canvas, plane)
+    mainRadius = locallyMask.radius
+
     mainFilter = new PencilFilter(gl, canvas, plane)
     uPencilGamma = mainFilter.gamma
 
@@ -52,13 +63,16 @@
         stackRenderer.init(texture)
       },
       drawOnFrame() {
-        uniforms && uniforms.int("uFilterMode", 0)
-
         plane.bind()
-        stackRenderer.bind(mainFilter.glProgram, "uOriginalTex")
+        stackRenderer.bind(programForOptions.glProgram, "uMainTex")
 
-        const { outBuf } = stackRenderer.beginPath()
-        mainFilter.apply(programForOptions, outBuf)
+        stackRenderer.beginPath()
+        plane.draw({ primitive: "TRIANGLES" })
+        stackRenderer.endPath()
+
+        locallyMask.saveBase(programForOptions, stackRenderer)
+        mainFilter.apply(programForOptions, stackRenderer)
+        locallyMask.applyMask(programForOptions, stackRenderer)
 
         filterStack.activeAfterFilters.forEach((filter) => {
           stackRenderer.beginPath()
@@ -68,9 +82,10 @@
         })
 
         stackRenderer.switchToCanvas()
+        uniforms && uniforms.int("uFilterMode", 0)
         plane.draw({ primitive: "TRIANGLES" })
       },
-      resize: [...mainFilter.resizes, stackRenderer.resize]
+      resize: [...mainFilter.resizes, ...locallyMask.resizes, stackRenderer.resize]
     }
   }
 
@@ -85,6 +100,13 @@
     download = SketchCanvas.download
     upload = SketchCanvas.changeImage
 
+    const watchDrag = new Drag(canvas)
+    watchDrag.onMove = (pos) => {
+      if (editing.main) {
+        locallyMask.center = pos
+      }
+    }
+
     await SketchCanvas.start(defaultImage)
   })
 </script>
@@ -92,6 +114,31 @@
 <DownloadButton onClick={download} />
 <UploadInput onChange={upload} />
 <canvas bind:this={canvas} />
+
+<div>
+  <Checkbox
+    bind:on={editing.main}
+    onChange={(on) => {
+      if (on) {
+        editing.main = true
+      } else {
+        editing.main = false
+      }
+    }}
+  >
+    移動モード
+  </Checkbox>
+
+  半径<Slider
+    bind:value={mainRadius}
+    onChange={(v) => {
+      locallyMask.radius = v
+    }}
+    min={0}
+    max={1}
+    step={0.01}
+  />
+</div>
 
 <div>
   線の薄さ<Slider

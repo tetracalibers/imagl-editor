@@ -6,10 +6,12 @@ in vec2 vTextureCoords;
 out vec4 fragColor;
 
 uniform sampler2D uMainTex;
-uniform int uFilterMode;
-uniform float uAlpha;
-uniform float uBlurSigma;
-uniform float uContrastGamma;
+uniform sampler2D uVrRandomTex;
+uniform sampler2D uVrOriginalTex;
+
+uniform float uVoronoiMixRatio;
+uniform float uRandomMixRatio;
+uniform float uGlowScale;
 
 // 符号なし整数の最大値
 const uint UINT_MAX = 0xffffffffu;
@@ -129,20 +131,57 @@ vec3 yGaussSmooth(sampler2D tex, vec2 uv, vec2 texelSize, float filterSize, floa
   return grad / weights;
 }
 
+vec2[9] offset3x3(vec2 texelSize) {
+  vec2 offset[9];
+  
+  offset[0] = vec2(-texelSize.x, -texelSize.y);
+  offset[1] = vec2( 0.0, -texelSize.y);
+  offset[2] = vec2( texelSize.x, -texelSize.y);
+  offset[3] = vec2(-texelSize.x, 0.0);
+  offset[4] = vec2( 0.0, 0.0);
+  offset[5] = vec2( texelSize.x, 0.0);
+  offset[6] = vec2(-texelSize.x, texelSize.y);
+  offset[7] = vec2( 0.0, texelSize.y);
+  offset[8] = vec2( texelSize.x, 1.0);
+  
+  return offset;
+}
+
+vec3 offsetLookup(sampler2D tex, vec2 center, vec2 offset) {
+  return texture(tex, center + offset).rgb;
+}
+
+vec3 smooth3x3(sampler2D tex, vec2 texelSize, vec2 center) {
+  vec2[9] offset = offset3x3(texelSize);
+  
+  vec3 result = vec3(0.0);
+  
+  for (int i = 0; i < 9; i++) {
+    result += offsetLookup(tex, center, offset[i]) / 9.0;
+  }
+  
+  return result;
+}
+
 void main() {
   ivec2 textureSize = textureSize(uMainTex, 0);
   vec2 texelSize = 1.0 / vec2(float(textureSize.x), float(textureSize.y));
   
   vec2 uv = vec2(vTextureCoords.x, 1.0 - vTextureCoords.y);
-  vec4 smpColor = texture(uMainTex, uv);
   
-  vec3 finalColor = uFilterMode == 1
-    ? xGaussSmooth(uMainTex, uv, texelSize, 9.0, uBlurSigma)
-    : uFilterMode == 2
-      ? yGaussSmooth(uMainTex, uv, texelSize, 9.0, uBlurSigma)
-      : uFilterMode == 3
-        ? gammaToneCurve(smpColor.rgb, uContrastGamma)
-        : smpColor.rgb;
-
-  fragColor = vec4(finalColor.rgb, uAlpha);
+  vec3 originalColor = texture(uMainTex, uv).rgb;
+  vec3 vrRandomColor = texture(uVrRandomTex, uv).rgb;
+  vec3 vrOriginalColor = texture(uVrOriginalTex, uv).rgb;
+  
+  vec3 mixedColor = mix(vrOriginalColor, originalColor, uVoronoiMixRatio);
+  
+  // uVrOriginalTexをぼかす
+  vec3 blurred = smooth3x3(uVrOriginalTex, texelSize, uv);
+  
+  // ランダムカラーを合成
+  mixedColor *= mix(vec3(1.0), vrRandomColor, uRandomMixRatio);
+  // グロー効果
+  mixedColor += blurred * uGlowScale;
+  
+  fragColor = vec4(mixedColor, 1.0);
 }

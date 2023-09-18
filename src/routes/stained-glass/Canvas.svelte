@@ -22,14 +22,19 @@
 
   let SketchCanvas: SketchFilter
 
+  let mainFilter: VoronoiStainedGlassFilter
+  let uVoronoiSiteCount: number
+  let uVoronoiMixRatio: number
+  let uRandomMixRatio: number
+  let uGlowScale: number
+
   let uAlpha = 0.9
 
   const blurX = new BlurFilter({ modeIdx: 1 })
   const blurY = new BlurFilter({ modeIdx: 2 })
   const contrast = new ContrastFilter({ modeIdx: 3 })
-  const staindGlass = new VoronoiStainedGlassFilter({ modeIdx: 4 })
 
-  const filterStack = new FilterStack({ blurX, blurY, contrast, staindGlass })
+  const filterStack = new FilterStack({ blurX, blurY, contrast })
 
   const sketch: SketchFn = ({ gl, canvas }) => {
     const programForOptions = new Program(gl)
@@ -42,6 +47,12 @@
     plane.setLocations({ vertices: 0, uv: 1 })
 
     const stackRenderer = new SwapFramebufferRenderer(gl, canvas)
+
+    mainFilter = new VoronoiStainedGlassFilter(gl, canvas, plane)
+    uVoronoiSiteCount = mainFilter.uVoronoiSiteCount
+    uVoronoiMixRatio = mainFilter.uVoronoiMixRatio
+    uRandomMixRatio = mainFilter.uRandomMixRatio
+    uGlowScale = mainFilter.uGlowScale
 
     gl.clearColor(1.0, 1.0, 1.0, 1.0)
     gl.clearDepth(1.0)
@@ -60,17 +71,7 @@
         plane.draw({ primitive: "TRIANGLES" })
         stackRenderer.endPath()
 
-        filterStack.activeBeforeFilters.forEach((filter) => {
-          stackRenderer.beginPath()
-          uniforms && filter.applyUniforms(uniforms)
-          plane.draw({ primitive: "TRIANGLES" })
-          stackRenderer.endPath()
-        })
-
-        stackRenderer.beginPath()
-        uniforms && staindGlass.applyUniforms(uniforms)
-        plane.draw({ primitive: "TRIANGLES" })
-        stackRenderer.endPath()
+        mainFilter.apply(programForOptions, stackRenderer)
 
         filterStack.activeAfterFilters.forEach((filter) => {
           stackRenderer.beginPath()
@@ -84,7 +85,7 @@
         uniforms && uniforms.float("uAlpha", uAlpha)
         plane.draw({ primitive: "TRIANGLES" })
       },
-      resize: [stackRenderer.resize]
+      resize: [...mainFilter.resizes, stackRenderer.resize]
     }
   }
 
@@ -108,10 +109,40 @@
 <canvas bind:this={canvas} />
 
 <div>
-  モザイクの強さ<Slider bind:value={staindGlass.uVoronoiMixRatio} min={0.5} max={1} step={0.01} />
+  モザイクの強さ<Slider
+    bind:value={uVoronoiMixRatio}
+    onChange={(v) => (mainFilter.uVoronoiMixRatio = v)}
+    min={0.5}
+    max={1}
+    step={0.01}
+  />
 </div>
 <div>
-  モザイクの細かさ<Slider bind:value={staindGlass.uVoronoiSiteCount} min={3} max={100} step={1} />
+  ガラスの色の濃さ<Slider
+    bind:value={uRandomMixRatio}
+    onChange={(v) => (mainFilter.uRandomMixRatio = v)}
+    min={0.01}
+    max={1}
+    step={0.01}
+  />
+</div>
+<div>
+  ガラスの背後の明るさ<Slider
+    bind:value={uGlowScale}
+    onChange={(v) => (mainFilter.uGlowScale = v)}
+    min={0.01}
+    max={1}
+    step={0.01}
+  />
+</div>
+<div>
+  モザイクの細かさ<Slider
+    bind:value={uVoronoiSiteCount}
+    onChange={(v) => (mainFilter.uVoronoiSiteCount = v)}
+    min={3}
+    max={100}
+    step={1}
+  />
 </div>
 
 <div>
@@ -123,9 +154,9 @@
     bind:on={contrast.active}
     onChange={(on) => {
       if (on) {
-        filterStack.active("contrast", { before: true })
+        filterStack.active("contrast")
       } else {
-        filterStack.deactive("contrast", { before: true })
+        filterStack.deactive("contrast")
       }
     }}
   >

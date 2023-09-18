@@ -3,13 +3,11 @@
 precision highp float;
 
 in vec2 vTextureCoords;
-out vec4 fragColor;
+layout (location = 0) out vec4 vrRandomColor;
+layout (location = 1) out vec4 vrOriginalColor;
 
 uniform sampler2D uMainTex;
-uniform int uFilterMode;
-uniform float uAlpha;
-uniform float uBlurSigma;
-uniform float uContrastGamma;
+uniform float uVoronoiSiteCount;
 
 // 符号なし整数の最大値
 const uint UINT_MAX = 0xffffffffu;
@@ -129,6 +127,38 @@ vec3 yGaussSmooth(sampler2D tex, vec2 uv, vec2 texelSize, float filterSize, floa
   return grad / weights;
 }
 
+vec2[9] offset3x3(vec2 texelSize) {
+  vec2 offset[9];
+  
+  offset[0] = vec2(-texelSize.x, -texelSize.y);
+  offset[1] = vec2( 0.0, -texelSize.y);
+  offset[2] = vec2( texelSize.x, -texelSize.y);
+  offset[3] = vec2(-texelSize.x, 0.0);
+  offset[4] = vec2( 0.0, 0.0);
+  offset[5] = vec2( texelSize.x, 0.0);
+  offset[6] = vec2(-texelSize.x, texelSize.y);
+  offset[7] = vec2( 0.0, texelSize.y);
+  offset[8] = vec2( texelSize.x, 1.0);
+  
+  return offset;
+}
+
+vec3 offsetLookup(sampler2D tex, vec2 center, vec2 offset) {
+  return texture(tex, center + offset).rgb;
+}
+
+vec3 smooth3x3(sampler2D tex, vec2 texelSize, vec2 center) {
+  vec2[9] offset = offset3x3(texelSize);
+  
+  vec3 result = vec3(0.0);
+  
+  for (int i = 0; i < 9; i++) {
+    result += offsetLookup(tex, center, offset[i]) / 9.0;
+  }
+  
+  return result;
+}
+
 void main() {
   ivec2 textureSize = textureSize(uMainTex, 0);
   vec2 texelSize = 1.0 / vec2(float(textureSize.x), float(textureSize.y));
@@ -136,13 +166,14 @@ void main() {
   vec2 uv = vec2(vTextureCoords.x, 1.0 - vTextureCoords.y);
   vec4 smpColor = texture(uMainTex, uv);
   
-  vec3 finalColor = uFilterMode == 1
-    ? xGaussSmooth(uMainTex, uv, texelSize, 9.0, uBlurSigma)
-    : uFilterMode == 2
-      ? yGaussSmooth(uMainTex, uv, texelSize, 9.0, uBlurSigma)
-      : uFilterMode == 3
-        ? gammaToneCurve(smpColor.rgb, uContrastGamma)
-        : smpColor.rgb;
-
-  fragColor = vec4(finalColor.rgb, uAlpha);
+  vec2 tileUv = uv * uVoronoiSiteCount;
+  vec2 voronoi = voronoi2(tileUv);
+  
+  // ボロノイ領域の色をランダムに求めたもの
+  vec3 voronoiRandomColor = vec3(voronoi, 1.0);
+  // 母点位置の色をボロノイ領域の色としたもの
+  vec3 vonoroiOriginalColor = texture(uMainTex, voronoi).rgb;
+  
+  vrOriginalColor = vec4(vonoroiOriginalColor, 1.0);
+  vrRandomColor = vec4(voronoiRandomColor, 1.0);
 }

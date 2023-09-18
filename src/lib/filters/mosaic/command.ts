@@ -19,7 +19,7 @@ export class MosaicFilter {
     this._gl = gl
     this._canvas = canvas
     this._screen = screen
-    this._useFramebuffer = new UseDepthFramebuffer(gl, canvas, { texUnitStart: 1 })
+    this._useFramebuffer = new UseDepthFramebuffer(gl, canvas, { texUnitStart: 4 })
   }
 
   apply(outProgram: Program, stack: SwapFramebufferRenderer) {

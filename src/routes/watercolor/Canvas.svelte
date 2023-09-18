@@ -15,6 +15,8 @@
   import Checkbox from "$lib/components/control/Checkbox.svelte"
   import { VoronoiWatercolorFilter } from "$lib/filters/watercolor/command"
   import { ContrastFilter } from "$lib/filters/contrast/command"
+  import { LocallyFilterMask } from "$lib/filters/locally/locally"
+  import { Drag } from "$lib/interactive/drag"
 
   let canvas: HTMLCanvasElement
   let download: () => void
@@ -33,6 +35,12 @@
 
   const filterStack = new FilterStack({ blurX, blurY, contrast })
 
+  let locallyMask: LocallyFilterMask
+  let mainRadius: number
+  let editing = {
+    main: false
+  }
+
   const sketch: SketchFn = ({ gl, canvas }) => {
     const programForOptions = new Program(gl)
     programForOptions.attach(vert, frag_options)
@@ -44,6 +52,9 @@
     plane.setLocations({ vertices: 0, uv: 1 })
 
     const stackRenderer = new SwapFramebufferRenderer(gl, canvas)
+
+    locallyMask = new LocallyFilterMask(gl, canvas, plane)
+    mainRadius = locallyMask.radius
 
     mainFilter = new VoronoiWatercolorFilter(gl, canvas, plane)
     uMixRatio = mainFilter.mixRatio
@@ -70,17 +81,9 @@
         plane.draw({ primitive: "TRIANGLES" })
         stackRenderer.endPath()
 
-        filterStack.activeBeforeFilters.forEach((filter) => {
-          stackRenderer.beginPath()
-          uniforms && filter.applyUniforms(uniforms)
-          plane.draw({ primitive: "TRIANGLES" })
-          stackRenderer.endPath()
-        })
-
+        locallyMask.saveBase(programForOptions, stackRenderer)
         mainFilter.apply(programForOptions, stackRenderer)
-
-        programForOptions.activate()
-        stackRenderer.bindPrev(programForOptions.glProgram, "uMainTex")
+        locallyMask.applyMask(programForOptions, stackRenderer)
 
         filterStack.activeAfterFilters.forEach((filter) => {
           stackRenderer.beginPath()
@@ -90,6 +93,7 @@
         })
 
         stackRenderer.switchToCanvas()
+        uniforms && uniforms.int("uFilterMode", 0)
         plane.draw({ primitive: "TRIANGLES" })
       },
       resize: [
@@ -97,6 +101,7 @@
           mainFilter.setup(canvas.width, canvas.height)
         },
         ...mainFilter.resizes,
+        ...locallyMask.resizes,
         stackRenderer.resize
       ]
     }
@@ -113,6 +118,13 @@
     download = SketchCanvas.download
     upload = SketchCanvas.changeImage
 
+    const watchDrag = new Drag(canvas)
+    watchDrag.onMove = (pos) => {
+      if (editing.main) {
+        locallyMask.center = pos
+      }
+    }
+
     await SketchCanvas.start(defaultImage)
   })
 </script>
@@ -120,6 +132,31 @@
 <DownloadButton onClick={download} />
 <UploadInput onChange={upload} />
 <canvas bind:this={canvas} />
+
+<div>
+  <Checkbox
+    bind:on={editing.main}
+    onChange={(on) => {
+      if (on) {
+        editing.main = true
+      } else {
+        editing.main = false
+      }
+    }}
+  >
+    移動モード
+  </Checkbox>
+
+  半径<Slider
+    bind:value={mainRadius}
+    onChange={(v) => {
+      locallyMask.radius = v
+    }}
+    min={0}
+    max={1}
+    step={0.01}
+  />
+</div>
 
 <div>
   モザイクの強さ<Slider
@@ -140,9 +177,9 @@
     bind:on={contrast.active}
     onChange={(on) => {
       if (on) {
-        filterStack.active("contrast", { before: true })
+        filterStack.active("contrast")
       } else {
-        filterStack.deactive("contrast", { before: true })
+        filterStack.deactive("contrast")
       }
     }}
   >

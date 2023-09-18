@@ -29,6 +29,7 @@
   let uVoronoiMixRatio: number
   let uRandomMixRatio: number
   let uGlowScale: number
+  let uShowVoronoiStroke: boolean
 
   let uAlpha = 0.9
 
@@ -61,6 +62,7 @@
     uVoronoiMixRatio = mainFilter.uVoronoiMixRatio
     uRandomMixRatio = mainFilter.uRandomMixRatio
     uGlowScale = mainFilter.uGlowScale
+    uShowVoronoiStroke = mainFilter.uShowVoronoiStroke
 
     locallyMask = new LocallyFilterMask(gl, canvas, plane)
     mainRadius = locallyMask.radius
@@ -189,6 +191,14 @@
     step={1}
   />
 </div>
+<Checkbox
+  bind:on={uShowVoronoiStroke}
+  onChange={(on) => {
+    mainFilter.uShowVoronoiStroke = on
+  }}
+>
+  モザイクの境界線を表示
+</Checkbox>
 
 <div>
   透明度<Slider bind:value={uAlpha} onChange={(v) => (uAlpha = v)} min={0} max={1} step={0.01} />

@@ -14,12 +14,15 @@ export class VoronoiStainedGlassFilter {
   private _path1Uniforms: Uniforms<"uVoronoiSiteCount">
 
   private _path2Program: Program
-  private _path2Uniforms: Uniforms<"uVoronoiMixRatio" | "uRandomMixRatio" | "uGlowScale">
+  private _path2Uniforms: Uniforms<
+    "uVoronoiMixRatio" | "uRandomMixRatio" | "uGlowScale" | "uShowVoronoiStroke"
+  >
 
   private _uVoronoiSiteCount = 50
   private _uVoronoiMixRatio = 0.8
   private _uRandomMixRatio = 0.4
   private _uGlowScale = 0.2
+  private _uShowVoronoiStroke = false
 
   constructor(gl: WebGL2RenderingContext, canvas: HTMLCanvasElement, screen: CanvasCoverPolygon) {
     this._gl = gl
@@ -31,7 +34,12 @@ export class VoronoiStainedGlassFilter {
 
     this._path2Program = new Program(gl)
     this._path2Program.attach(vert, frag_2)
-    this._path2Uniforms = new Uniforms(gl, ["uVoronoiMixRatio", "uRandomMixRatio", "uGlowScale"])
+    this._path2Uniforms = new Uniforms(gl, [
+      "uVoronoiMixRatio",
+      "uRandomMixRatio",
+      "uGlowScale",
+      "uShowVoronoiStroke"
+    ])
     this._path2Uniforms.init(this._path2Program.glProgram)
   }
 
@@ -51,6 +59,7 @@ export class VoronoiStainedGlassFilter {
     this._path2Uniforms.float("uVoronoiMixRatio", this._uVoronoiMixRatio)
     this._path2Uniforms.float("uRandomMixRatio", this._uRandomMixRatio)
     this._path2Uniforms.float("uGlowScale", this._uGlowScale)
+    this._path2Uniforms.bool("uShowVoronoiStroke", this._uShowVoronoiStroke)
     this._screen.draw({ primitive: "TRIANGLES" })
 
     stack.beginPath()
@@ -90,6 +99,14 @@ export class VoronoiStainedGlassFilter {
 
   set uGlowScale(value: number) {
     this._uGlowScale = value
+  }
+
+  get uShowVoronoiStroke() {
+    return this._uShowVoronoiStroke
+  }
+
+  set uShowVoronoiStroke(value: boolean) {
+    this._uShowVoronoiStroke = value
   }
 
   get resizes() {

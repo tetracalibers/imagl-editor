@@ -12,6 +12,7 @@ uniform sampler2D uVrOriginalTex;
 uniform float uVoronoiMixRatio;
 uniform float uRandomMixRatio;
 uniform float uGlowScale;
+uniform bool uShowVoronoiStroke;
 
 // 符号なし整数の最大値
 const uint UINT_MAX = 0xffffffffu;
@@ -163,9 +164,62 @@ vec3 smooth3x3(sampler2D tex, vec2 texelSize, vec2 center) {
   return result;
 }
 
+// @see https://iquilezles.org/articles/palettes/
+vec3 palette(float t, vec3 a, vec3 b, vec3 c, vec3 d) {
+  return a + b * cos(6.28318 * (c * t + d));
+}
+
+// form from http://lolengine.net/blog/2013/07/27/rgb-to-hsv-in-glsl
+vec3 rgb2hsv(vec3 c) {
+  vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+  vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
+  vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+
+  float d = q.x - min(q.w, q.y);
+  float e = 1.0e-10;
+  return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+}
+
+// fork from https://www.shadertoy.com/view/MsS3Wc
+vec3 hsv2rgb(vec3 color) {
+  // Hueを[0, 1]から[0, 6]へスケール
+  float hue = color.x * 6.0;
+  
+  vec3 m = mod(hue + vec3(0.0, 4.0, 2.0), 6.0);
+  vec3 a = abs(m - 3.0);
+  vec3 rgb = clamp(a - 1.0, 0.0, 1.0);
+    
+  // 白とrgbを彩度（動径）に沿って補間したものに明度をかける
+  return color.z * mix(vec3(1.0), rgb, color.y);
+}
+
+float posterizeHue(float hue, int level) {
+  float hueStep = 255.0 / float(level - 1);
+  
+  float newHue = hue * 360.0;
+  
+  newHue = floor(newHue / hueStep + 0.5) * hueStep;
+  newHue /= 360.0;
+  
+  return newHue;
+}
+
+float posterizeColorRatio(float ratio, int level) {
+  float ratioStep = 255.0 / float(level - 1);
+  
+  float unclamp = ratio * 255.0;
+  float newRatio = floor(unclamp / ratioStep + 0.5) * ratioStep;
+  newRatio /= 255.0;
+  
+  return newRatio;
+}
+
+const vec3 luminanceWeight = vec3(0.298912, 0.586611, 0.114478);
+
 void main() {
-  ivec2 textureSize = textureSize(uMainTex, 0);
-  vec2 texelSize = 1.0 / vec2(float(textureSize.x), float(textureSize.y));
+  ivec2 iTextureSize = textureSize(uMainTex, 0);
+  vec2 textureSize = vec2(float(iTextureSize.x), float(iTextureSize.y));
+  vec2 texelSize = 1.0 / textureSize;
   
   vec2 uv = vec2(vTextureCoords.x, 1.0 - vTextureCoords.y);
   
@@ -173,7 +227,15 @@ void main() {
   vec3 vrRandomColor = texture(uVrRandomTex, uv).rgb;
   vec3 vrOriginalColor = texture(uVrOriginalTex, uv).rgb;
   
-  vec3 mixedColor = mix(vrOriginalColor, originalColor, uVoronoiMixRatio);
+  vec3 edge = fwidth(vrRandomColor);
+  edge.r = (edge.r + edge.g + edge.b) / 3.0;
+
+  vec3 borderColor = vec3(0.5);
+  
+  float threshold = uShowVoronoiStroke ? 0.01 : 1.0;
+  vec3 mixedColor = edge.r > threshold
+    ? borderColor
+    : mix(vrOriginalColor, originalColor, uVoronoiMixRatio);
   
   // uVrOriginalTexをぼかす
   vec3 blurred = smooth3x3(uVrOriginalTex, texelSize, uv);

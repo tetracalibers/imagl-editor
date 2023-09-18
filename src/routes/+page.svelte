@@ -7,7 +7,6 @@
   <li><a href="/normal">オリジナル</a></li>
   <li><a href="/watercolor-pencil">水彩色鉛筆画</a></li>
   <li><a href="/pencil">鉛筆画</a></li>
-  <li><a href="/crayon">クレヨン画</a></li>
   <li><a href="/spray">スプレー画</a></li>
   <li><a href="/stained-glass">ステンドグラス</a></li>
   <li><a href="/watercolor">水彩画</a></li>

@@ -34,6 +34,13 @@ vec2 hash22(vec2 b) {
   return vec2(uhash22(n)) / vec2(UINT_MAX);
 }
 
+// Lpノルム
+float lengthLp(vec2 xy) {
+  vec2 v = abs(xy);
+  float p = 2.0;
+  return pow(pow(v.x, p) + pow(v.y, p), 1.0 / p);
+}
+
 // 第一近傍距離による胞体ノイズ
 vec2 voronoi2(vec2 p) {
   // 最も近い格子点
@@ -55,7 +62,7 @@ vec2 voronoi2(vec2 p) {
       // 隣接するタイル内のランダムな点
       vec2 neighbor = hash22(i + offset);
       // 隣接するタイル内のランダムな点までの距離
-      float dist = distance(neighbor + offset, f);
+      float dist = lengthLp(neighbor + offset - f);
       // distMinより近ければ更新
       if (distMin > dist) {
         iMin = neighbor;
@@ -160,13 +167,17 @@ vec3 smooth3x3(sampler2D tex, vec2 texelSize, vec2 center) {
 }
 
 void main() {
-  ivec2 textureSize = textureSize(uMainTex, 0);
-  vec2 texelSize = 1.0 / vec2(float(textureSize.x), float(textureSize.y));
+  ivec2 iTextureSize = textureSize(uMainTex, 0);
+  vec2 textureSize = vec2(float(iTextureSize.x), float(iTextureSize.y));
+  float aspect = textureSize.x / textureSize.y;
+  vec2 texelSize = 1.0 / textureSize;
   
   vec2 uv = vec2(vTextureCoords.x, 1.0 - vTextureCoords.y);
   vec4 smpColor = texture(uMainTex, uv);
   
-  vec2 tileUv = uv * uVoronoiSiteCount;
+  vec2 tileUv = uv;
+  tileUv.x *= aspect;
+  tileUv *= uVoronoiSiteCount;
   vec2 voronoi = voronoi2(tileUv);
   
   // ボロノイ領域の色をランダムに求めたもの

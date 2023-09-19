@@ -160,13 +160,17 @@ vec3 smooth3x3(sampler2D tex, vec2 texelSize, vec2 center) {
 }
 
 void main() {
-  ivec2 textureSize = textureSize(uMainTex, 0);
-  vec2 texelSize = 1.0 / vec2(float(textureSize.x), float(textureSize.y));
+  ivec2 iTextureSize = textureSize(uMainTex, 0);
+  vec2 textureSize = vec2(float(iTextureSize.x), float(iTextureSize.y));
+  float aspect = textureSize.x / textureSize.y;
+  vec2 texelSize = 1.0 / textureSize;
   
   vec2 uv = vec2(vTextureCoords.x, 1.0 - vTextureCoords.y);
   vec4 smpColor = texture(uMainTex, uv);
   
-  vec2 tileUv = uv * uVoronoiSiteCount;
+  vec2 tileUv = uv;
+  tileUv.x *= aspect;
+  tileUv *= uVoronoiSiteCount;
   vec2 voronoi = voronoi2(tileUv);
   
   // ボロノイ領域の色をランダムに求めたもの

@@ -176,6 +176,25 @@ float posterizeColorRatio(float ratio, int level) {
 
 const vec3 luminanceWeight = vec3(0.298912, 0.586611, 0.114478);
 
+vec4 roberts(sampler2D tex, vec2 uv, vec2 texelSize) {
+  vec2 offset[4];
+  offset[0] = vec2(texelSize.x, 0.0);
+  offset[1] = vec2(0.0, texelSize.y);
+  offset[2] = vec2(0.0);
+  offset[3] = vec2(texelSize.x, texelSize.y);
+  
+  vec4 color[4];
+  color[0] = texture(tex, uv + offset[0]);
+  color[1] = texture(tex, uv + offset[1]);
+  color[2] = texture(tex, uv + offset[2]);
+  color[3] = texture(tex, uv + offset[3]);
+  
+  vec4 dx = color[0] - color[1];
+  vec4 dy = color[2] - color[3];
+  
+  return abs(dx) + abs(dy);
+}
+
 void main() {
   ivec2 iTextureSize = textureSize(uMainTex, 0);
   vec2 textureSize = vec2(float(iTextureSize.x), float(iTextureSize.y));
@@ -187,7 +206,7 @@ void main() {
   vec3 vrRandomColor = texture(uVrRandomTex, uv).rgb;
   vec3 vrOriginalColor = texture(uVrOriginalTex, uv).rgb;
   
-  vec3 edge = fwidth(vrRandomColor);
+  vec3 edge = roberts(uVrRandomTex, uv, texelSize).rgb;
   edge.r = (edge.r + edge.g + edge.b) / 3.0;
 
   vec3 borderColor = vec3(0.5);

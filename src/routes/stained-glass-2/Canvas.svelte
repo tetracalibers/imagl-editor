@@ -30,6 +30,7 @@
   let uRandomMixRatio: number
   let uGlowScale: number
   let uShowVoronoiStroke: boolean
+  let uApplyEmboss: boolean
 
   let uAlpha = 0.9
 
@@ -63,6 +64,7 @@
     uRandomMixRatio = mainFilter.uRandomMixRatio
     uGlowScale = mainFilter.uGlowScale
     uShowVoronoiStroke = mainFilter.uShowVoronoiStroke
+    uApplyEmboss = mainFilter.uApplyEmboss
 
     locallyMask = new LocallyFilterMask(gl, canvas, plane)
     mainRadius = locallyMask.radius
@@ -198,6 +200,14 @@
   }}
 >
   モザイクの境界線を表示
+</Checkbox>
+<Checkbox
+  bind:on={uApplyEmboss}
+  onChange={(on) => {
+    mainFilter.uApplyEmboss = on
+  }}
+>
+  エンボス加工
 </Checkbox>
 
 <div>

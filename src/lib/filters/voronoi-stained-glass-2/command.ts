@@ -4,6 +4,7 @@ import type { SwapFramebufferRenderer } from "$lib/core/swap-fb"
 import vert from "../../shaders/image.vert?raw"
 import frag_1 from "./1.frag?raw"
 import frag_2 from "./2.frag?raw"
+import frag_3 from "./3.frag?raw"
 import { UseMRT } from "$lib/core/mrt"
 
 export class VoronoiStainedGlassFilter {
@@ -18,11 +19,14 @@ export class VoronoiStainedGlassFilter {
     "uVoronoiMixRatio" | "uRandomMixRatio" | "uGlowScale" | "uShowVoronoiStroke"
   >
 
+  private _path3Program: Program
+
   private _uVoronoiSiteCount = 30
   private _uVoronoiMixRatio = 0.8
   private _uRandomMixRatio = 0.5
-  private _uGlowScale = 0.3
-  private _uShowVoronoiStroke = false
+  private _uGlowScale = 0.2
+  private _uShowVoronoiStroke = true
+  private _uApplyEmboss = true
 
   constructor(gl: WebGL2RenderingContext, canvas: HTMLCanvasElement, screen: CanvasCoverPolygon) {
     this._gl = gl
@@ -41,11 +45,15 @@ export class VoronoiStainedGlassFilter {
       "uShowVoronoiStroke"
     ])
     this._path2Uniforms.init(this._path2Program.glProgram)
+
+    this._path3Program = new Program(gl)
+    this._path3Program.attach(vert, frag_3)
   }
 
   apply(outProgram: Program, stack: SwapFramebufferRenderer) {
     const mrtR = this._mrtRenderer
     const path2Program = this._path2Program
+    const path3Program = this._path3Program
 
     mrtR.switchToMTR()
     stack.bind(mrtR.glProgramForMTR, "uOriginalTex")
@@ -61,6 +69,15 @@ export class VoronoiStainedGlassFilter {
     this._path2Uniforms.float("uGlowScale", this._uGlowScale)
     this._path2Uniforms.bool("uShowVoronoiStroke", this._uShowVoronoiStroke)
     this._screen.draw({ primitive: "TRIANGLES" })
+    stack.endPath()
+
+    if (this._uApplyEmboss) {
+      stack.beginPath()
+      path3Program.activate()
+      stack.bindPrev(path3Program.glProgram, "uMainTex")
+      this._screen.draw({ primitive: "TRIANGLES" })
+      stack.endPath()
+    }
 
     stack.beginPath()
     outProgram.activate()
@@ -107,6 +124,14 @@ export class VoronoiStainedGlassFilter {
 
   set uShowVoronoiStroke(value: boolean) {
     this._uShowVoronoiStroke = value
+  }
+
+  get uApplyEmboss() {
+    return this._uApplyEmboss
+  }
+
+  set uApplyEmboss(value: boolean) {
+    this._uApplyEmboss = value
   }
 
   get resizes() {

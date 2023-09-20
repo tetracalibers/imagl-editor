@@ -103,11 +103,10 @@ void main() {
     1.0, 1.0, 0.0
   );
   
-  // TODO: 調整できるようにする
-  float uCoef = 0.3;
+  float coef = 0.3;
     
   vec3 embossColor = applyKernel(uMainTex, texelSize, uv, embossKernel);
-  embossColor *= uCoef;
+  embossColor *= coef;
   embossColor += originalColor;
   
   fragColor = vec4(embossColor, 1.0);

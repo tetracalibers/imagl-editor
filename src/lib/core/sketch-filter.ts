@@ -76,6 +76,8 @@ export class SketchFilter {
   start = async (img: string) => {
     const gl = this._context.gl
     const texture = new ImageTexture(gl, img)
+    // 画像サイズに関わらず、texelSizeを一定にしたい
+    texture.MIN_FILTER = "LINEAR_MIPMAP_NEAREST"
     await texture.load()
     this._context.setFitImage(texture.img)
     this._preloaded && this._preloaded(texture)
@@ -86,6 +88,8 @@ export class SketchFilter {
     const gl = this._context.gl
     const src = typeof img === "string" ? img : URL.createObjectURL(img)
     const texture = new ImageTexture(gl, src)
+    // 画像サイズに関わらず、texelSizeを一定にしたい
+    texture.MIN_FILTER = "LINEAR_MIPMAP_NEAREST"
     await texture.load()
     this._context.setFitImage(texture.img)
     this._preloaded && this._preloaded(texture)

@@ -4,9 +4,7 @@
 </svelte:head>
 
 <ul>
-  <li><a href="/normal">オリジナル</a></li>
   <li><a href="/mosaic">モザイク</a></li>
-  <li><a href="/watercolor-pencil">水彩色鉛筆画</a></li>
   <li><a href="/pencil">鉛筆によるデッサン画</a></li>
   <li><a href="/pale-color-pencil">色鉛筆によるデッサン画</a></li>
   <li><a href="/spray">スプレー画</a></li>

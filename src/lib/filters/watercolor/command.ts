@@ -53,7 +53,7 @@ export class VoronoiWatercolorFilter {
   private _screen: CanvasCoverPolygon
   private _cone: InstancedGeometry
 
-  private _uMixRatio = 0.3
+  private _uMixRatio = 0.8
 
   private _sitePointsCount = 2000
   private _coneResolution = 64

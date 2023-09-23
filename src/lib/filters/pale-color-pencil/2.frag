@@ -127,7 +127,6 @@ vec3 gammaToneCurve(vec3 color, float gamma) {
 
 uniform sampler2D uMainTex;
 uniform sampler2D uEdgeTex; // edge
-uniform sampler2D uPosterizeTex; // posterized
 
 uniform float uEdgeContrast;
 uniform float uAreaContrast;
@@ -144,7 +143,6 @@ void main() {
   vec2 texCoord = vec2(vTextureCoords.x, 1.0 - vTextureCoords.y);
   
   vec3 prevColor = texture(uMainTex, texCoord).rgb;
-  vec3 posterized = texture(uPosterizeTex, texCoord).rgb;
   vec3 edge = texture(uEdgeTex, texCoord).rgb;
   
   float radius = 2.0;
@@ -162,15 +160,15 @@ void main() {
   
   float c = hash21(texCoord);
     
-  vec3 pp = texture(uPosterizeTex, c + vec2(dx, dy) * magnitude).rgb;
-  vec3 mp = texture(uPosterizeTex, c + vec2(-dx, dy) * magnitude).rgb;
-  vec3 pm = texture(uPosterizeTex, c + vec2(dx, -dy) * magnitude).rgb;
-  vec3 mm = texture(uPosterizeTex, c + vec2(-dx, -dy) * magnitude).rgb;
+  vec3 pp = texture(uMainTex, c + vec2(dx, dy) * magnitude).rgb;
+  vec3 mp = texture(uMainTex, c + vec2(-dx, dy) * magnitude).rgb;
+  vec3 pm = texture(uMainTex, c + vec2(dx, -dy) * magnitude).rgb;
+  vec3 mm = texture(uMainTex, c + vec2(-dx, -dy) * magnitude).rgb;
   
-  vec3 hatchR = posterized + mm;
+  vec3 hatchR = prevColor + mm;
   hatchR -= pp;
   
-  vec3 hatchL = posterized + mp;
+  vec3 hatchL = prevColor + mp;
   hatchL -= pm;
   
   vec3 sketch = hatchR * hatchL;

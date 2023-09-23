@@ -100,13 +100,9 @@ vec3 applyKernelXY(sampler2D tex, vec2 texelSize, vec2 center, float[9] kernelX,
 
 // common
 uniform sampler2D uOriginalTex;
-// for level
-uniform float uPencilGamma;
 
 in vec2 vTextureCoords;
-
-layout (location = 0) out vec4 fragColor1;
-layout (location = 1) out vec4 fragColor2;
+out vec4 fragColor;
 
 void main() {
   ivec2 textureSize = textureSize(uOriginalTex, 0);
@@ -114,23 +110,6 @@ void main() {
   
   vec2 texCoord = vec2(vTextureCoords.x, 1.0 - vTextureCoords.y);
   vec3 inputColor = texture(uOriginalTex, texCoord).rgb;
-  
-  /* level -------------------------------------- */
-  
-  // 輝度調整
-  vec3 outColor1 = pow(inputColor, vec3(uPencilGamma));
-  
-  vec3 hsv = rgb2hsv(outColor1);
-  
-  // HSVによる階調数低減
-  hsv.r = posterizeHue(hsv.r, 256);
-  hsv.g = posterizeColorRatio(hsv.g, 2);
-  hsv.b = posterizeColorRatio(hsv.b, 128);
-  
-  outColor1 = hsv2rgb(hsv);
-  outColor1 = mix(outColor1, vec3(1.0), vec3(0.3, 0.3, 0.3));
-  
-  /* edge --------------------------------------- */
   
   // prewittフィルタ
   float[9] kernelX = float[](
@@ -145,11 +124,8 @@ void main() {
   );
   
   // エッジ抽出
-  vec3 outColor2 = applyKernelXY(uOriginalTex, texelSize, texCoord, kernelX, kernelY);
-  outColor2 = vec3(toMonochrome(outColor2));
+  vec3 edge = applyKernelXY(uOriginalTex, texelSize, texCoord, kernelX, kernelY);
+  float edgeValue = toMonochrome(edge);
   
-  /* result ------------------------------------- */
-  
-  fragColor1 = vec4(outColor1, 1.0);
-  fragColor2 = vec4(outColor2, 1.0);
+  fragColor = vec4(vec3(edgeValue), 1.0);
 }

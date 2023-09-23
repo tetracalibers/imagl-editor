@@ -6,7 +6,7 @@ import type { CanvasCoverPolygon } from "sketchgl/geometry"
 import { UseFramebuffer } from "$lib/core/offscreen"
 import type { SwapFramebufferRenderer } from "$lib/core/swap-fb"
 
-export class PaleColorPencilFilter {
+export class ColorPencilFilter {
   private _gl: WebGL2RenderingContext
   private _path2Uniforms: Uniforms<"uEdgeContrast" | "uAreaContrast" | "uPaperColorBright">
   private _path1Renderer: UseFramebuffer

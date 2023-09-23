@@ -16,7 +16,7 @@
   import Checkbox from "$lib/components/control/Checkbox.svelte"
   import { LocallyFilterMask } from "$lib/filters/locally/locally"
   import { Drag } from "$lib/interactive/drag"
-  import { PaleColorPencilFilter } from "$lib/filters/color-pencil/command"
+  import { ColorPencilFilter } from "$lib/filters/color-pencil/command"
   import { ContrastFilter } from "$lib/filters/contrast/command"
 
   let canvas: HTMLCanvasElement
@@ -25,7 +25,7 @@
 
   let SketchCanvas: SketchFilter
 
-  let mainFilter: PaleColorPencilFilter
+  let mainFilter: ColorPencilFilter
   let uEdgeContrast: number
   let uAreaContrast: number
   let uPaperColorBright: number
@@ -57,7 +57,7 @@
     locallyMask = new LocallyFilterMask(gl, canvas, plane)
     mainRadius = locallyMask.radius
 
-    mainFilter = new PaleColorPencilFilter(gl, canvas, plane)
+    mainFilter = new ColorPencilFilter(gl, canvas, plane)
     uEdgeContrast = mainFilter.edgeContrast
     uAreaContrast = mainFilter.areaContrast
     uPaperColorBright = mainFilter.paperColorBright

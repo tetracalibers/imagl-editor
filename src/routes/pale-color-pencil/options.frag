@@ -8,6 +8,7 @@ out vec4 fragColor;
 uniform sampler2D uMainTex;
 uniform int uFilterMode;
 uniform float uBlurSigma;
+uniform float uContrastGamma;
 
 // 正規分布（ガウス分布）
 float gauss(float x, float sigma) {
@@ -57,6 +58,11 @@ vec3 yGaussSmooth(sampler2D tex, vec2 uv, vec2 texelSize, float filterSize, floa
   return grad / weights;
 }
 
+// ガンマ補正のトーンカーブ
+vec3 gammaToneCurve(vec3 color, float gamma) {
+  return pow(color, vec3(gamma));
+}
+
 void main() {
   ivec2 textureSize = textureSize(uMainTex, 0);
   vec2 texelSize = 1.0 / vec2(float(textureSize.x), float(textureSize.y));
@@ -68,7 +74,9 @@ void main() {
     ? xGaussSmooth(uMainTex, uv, texelSize, 9.0, uBlurSigma)
     : uFilterMode == 2
       ? yGaussSmooth(uMainTex, uv, texelSize, 9.0, uBlurSigma)
-      : smpColor.rgb;
+      : uFilterMode == 3
+        ? gammaToneCurve(smpColor.rgb, uContrastGamma)
+        : smpColor.rgb;
 
   fragColor = vec4(finalColor, smpColor.a);
 }

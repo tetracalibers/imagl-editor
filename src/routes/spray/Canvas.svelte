@@ -22,7 +22,7 @@
 
   let SketchCanvas: SketchFilter
 
-  let uAlpha = 0.9
+  let uAlpha = 1.0
 
   const blurX = new BlurFilter({ modeIdx: 1 })
   const blurY = new BlurFilter({ modeIdx: 2 })

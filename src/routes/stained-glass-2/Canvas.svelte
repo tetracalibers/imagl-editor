@@ -32,7 +32,7 @@
   let uShowVoronoiStroke: boolean
   let uApplyEmboss: boolean
 
-  let uAlpha = 0.9
+  let uAlpha = 1.0
 
   let locallyMask: LocallyFilterMask
   let mainRadius: number

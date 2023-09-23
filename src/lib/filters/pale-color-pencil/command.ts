@@ -8,7 +8,7 @@ import type { SwapFramebufferRenderer } from "$lib/core/swap-fb"
 
 export class PaleColorPencilFilter {
   private _gl: WebGL2RenderingContext
-  private _path2Uniforms: Uniforms<"uEdgeContrast" | "uAreaContrast">
+  private _path2Uniforms: Uniforms<"uEdgeContrast" | "uAreaContrast" | "uPaperColorBright">
   private _path1Renderer: UseFramebuffer
   private _offRenderer: UseFramebuffer
   private _path1Program: Program
@@ -17,6 +17,7 @@ export class PaleColorPencilFilter {
 
   private _uEdgeContrast = 0.8
   private _uAreaContrast = 0.8
+  private _uPaperColorBright = 0.9
 
   constructor(gl: WebGL2RenderingContext, canvas: HTMLCanvasElement, screen: CanvasCoverPolygon) {
     this._gl = gl
@@ -31,7 +32,7 @@ export class PaleColorPencilFilter {
     this._path2Program = new Program(gl)
     this._path2Program.attach(vert, frag_2)
 
-    this._path2Uniforms = new Uniforms(gl, ["uEdgeContrast", "uAreaContrast"])
+    this._path2Uniforms = new Uniforms(gl, ["uEdgeContrast", "uAreaContrast", "uPaperColorBright"])
     this._path2Uniforms.init(this._path2Program.glProgram)
   }
 
@@ -50,6 +51,7 @@ export class PaleColorPencilFilter {
     path1.useTexture(path2Program, { name: "uEdgeTex" })
     this._path2Uniforms.float("uEdgeContrast", this._uEdgeContrast)
     this._path2Uniforms.float("uAreaContrast", this._uAreaContrast)
+    this._path2Uniforms.float("uPaperColorBright", this._uPaperColorBright)
     this._screen.draw({ primitive: "TRIANGLES" })
 
     stack.beginPath()
@@ -73,6 +75,14 @@ export class PaleColorPencilFilter {
 
   get areaContrast() {
     return this._uAreaContrast
+  }
+
+  set paperColorBright(value: number) {
+    this._uPaperColorBright = value
+  }
+
+  get paperColorBright() {
+    return this._uPaperColorBright
   }
 
   get resizes() {

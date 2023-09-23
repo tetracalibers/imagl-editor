@@ -130,6 +130,7 @@ uniform sampler2D uEdgeTex; // edge
 
 uniform float uEdgeContrast;
 uniform float uAreaContrast;
+uniform float uPaperColorBright;
 
 in vec2 vTextureCoords;
 
@@ -150,7 +151,7 @@ void main() {
   float y = (texCoord.y * textureSize.y) + hash21(vec2(texCoord.y, texCoord.x)) * radius * 2.0 - radius;
   vec3 noisedColor = texture(uMainTex, vec2(x, y) / textureSize).rgb;
   // ランダムで白を混ぜる
-  noisedColor = mix(noisedColor, vec3(0.9), hash21(texCoord));
+  noisedColor = mix(noisedColor, vec3(uPaperColorBright), hash21(texCoord));
   
   float grayEdge = toMonochrome(edge);
   float dx = dFdx(grayEdge);

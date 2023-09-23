@@ -28,6 +28,7 @@
   let mainFilter: PaleColorPencilFilter
   let uEdgeContrast: number
   let uAreaContrast: number
+  let uPaperColorBright: number
 
   let locallyMask: LocallyFilterMask
   let mainRadius: number
@@ -59,6 +60,7 @@
     mainFilter = new PaleColorPencilFilter(gl, canvas, plane)
     uEdgeContrast = mainFilter.edgeContrast
     uAreaContrast = mainFilter.areaContrast
+    uPaperColorBright = mainFilter.paperColorBright
 
     gl.clearColor(1.0, 1.0, 1.0, 1.0)
     gl.clearDepth(1.0)
@@ -159,6 +161,16 @@
   色の薄さ<Slider
     bind:value={uAreaContrast}
     onChange={(v) => (mainFilter.areaContrast = v)}
+    min={0.7}
+    max={1.0}
+    step={0.01}
+  />
+</div>
+
+<div>
+  紙の明るさ<Slider
+    bind:value={uPaperColorBright}
+    onChange={(v) => (mainFilter.paperColorBright = v)}
     min={0.7}
     max={1.0}
     step={0.01}

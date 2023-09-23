@@ -100,14 +100,14 @@ vec3 hsv2rgb(vec3 color) {
   return color.z * mix(vec3(1.0), rgb, color.y);
 }
 
-vec3 toPastel(vec3 color) {
+vec3 toPastel(vec3 color, float strength) {
   vec3 hsv = rgb2hsv(color);
   // 彩度は0% ~ 95%の範囲にする
   hsv.y = clamp(hsv.y, 0.0, 0.95);
   // 明度は85% ~ 95%の範囲にする
   hsv.z = clamp(hsv.z, 0.85, 0.95);
   vec3 rgb = hsv2rgb(hsv);
-  rgb = overlay(rgb, vec3(0.8));
+  rgb = overlay(rgb, vec3(strength));
   return rgb;
 }
 
@@ -129,19 +129,30 @@ uniform sampler2D uMainTex;
 uniform sampler2D uEdgeTex; // edge
 uniform sampler2D uPosterizeTex; // posterized
 
+uniform float uEdgeContrast;
+uniform float uAreaContrast;
+
 in vec2 vTextureCoords;
 
 out vec4 fragColor;
 
 void main() {
-  ivec2 textureSize = textureSize(uPosterizeTex, 0);
-  vec2 texelSize = 1.0 / vec2(float(textureSize.x), float(textureSize.y));
+  ivec2 iTextureSize = textureSize(uMainTex, 0);
+  vec2 textureSize = vec2(float(iTextureSize.x), float(iTextureSize.y));
+  vec2 texelSize = 1.0 / textureSize;
   
   vec2 texCoord = vec2(vTextureCoords.x, 1.0 - vTextureCoords.y);
   
   vec3 prevColor = texture(uMainTex, texCoord).rgb;
   vec3 posterized = texture(uPosterizeTex, texCoord).rgb;
   vec3 edge = texture(uEdgeTex, texCoord).rgb;
+  
+  float radius = 2.0;
+  float x = (texCoord.x * textureSize.x) + hash21(texCoord) * radius * 2.0 - radius;
+  float y = (texCoord.y * textureSize.y) + hash21(vec2(texCoord.y, texCoord.x)) * radius * 2.0 - radius;
+  vec3 noisedColor = texture(uMainTex, vec2(x, y) / textureSize).rgb;
+  // ランダムで白を混ぜる
+  noisedColor = mix(noisedColor, vec3(0.9), hash21(texCoord));
   
   float grayEdge = toMonochrome(edge);
   float dx = dFdx(grayEdge);
@@ -169,11 +180,10 @@ void main() {
   
   float edgeAverage = (edge.r + edge.g + edge.b) / 3.0;
   
-  prevColor = toPastel(prevColor);
-  
   vec3 outColor = vec3(1.0) - sketch * edge;
   outColor = mix(outColor, sprayColor, dot(edge, vec3(1.0)));
-  outColor = mix(outColor, prevColor, edgeAverage);
+  outColor = mix(outColor, toPastel(prevColor, uEdgeContrast), edgeAverage);
+  outColor *= toPastel(noisedColor, uAreaContrast);
   
   fragColor = vec4(outColor, 1.0);
 }

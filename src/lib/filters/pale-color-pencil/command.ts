@@ -9,13 +9,14 @@ import type { SwapFramebufferRenderer } from "$lib/core/swap-fb"
 
 export class PaleColorPencilFilter {
   private _gl: WebGL2RenderingContext
-  private _path1Uniforms: Uniforms<"uPencilGamma">
+  private _path1Uniforms: Uniforms<"uEdgeContrast" | "uAreaContrast">
   private _mrtRenderer: UseMRT
   private _offRenderer: UseFramebuffer
   private _path2Program: Program
   private _screen: CanvasCoverPolygon
 
-  private _uPencilGamma = 2.0
+  private _uEdgeContrast = 0.8
+  private _uAreaContrast = 0.8
 
   constructor(gl: WebGL2RenderingContext, canvas: HTMLCanvasElement, screen: CanvasCoverPolygon) {
     this._gl = gl
@@ -27,8 +28,8 @@ export class PaleColorPencilFilter {
     this._path2Program = new Program(gl)
     this._path2Program.attach(vert, frag_2)
 
-    this._path1Uniforms = new Uniforms(gl, ["uPencilGamma"])
-    this._path1Uniforms.init(this._mrtRenderer.glProgramForMTR)
+    this._path1Uniforms = new Uniforms(gl, ["uEdgeContrast", "uAreaContrast"])
+    this._path1Uniforms.init(this._path2Program.glProgram)
   }
 
   apply(outProgram: Program, stack: SwapFramebufferRenderer) {
@@ -38,13 +39,14 @@ export class PaleColorPencilFilter {
 
     mrtR.switchToMTR()
     stack.bind(mrtR.glProgramForMTR, "uOriginalTex")
-    this._path1Uniforms.float("uPencilGamma", this._uPencilGamma)
     this._screen.draw({ primitive: "TRIANGLES" })
 
     mrtR.switchToNextTexture(path2Program, offR.framebuffer)
     stack.bind(path2Program.glProgram, "uMainTex")
     mrtR.useTexture(path2Program, { idx: 0, name: "uPosterizeTex" })
     mrtR.useTexture(path2Program, { idx: 1, name: "uEdgeTex" })
+    this._path1Uniforms.float("uEdgeContrast", this._uEdgeContrast)
+    this._path1Uniforms.float("uAreaContrast", this._uAreaContrast)
     this._screen.draw({ primitive: "TRIANGLES" })
 
     stack.beginPath()
@@ -54,12 +56,20 @@ export class PaleColorPencilFilter {
     stack.endPath()
   }
 
-  set gamma(value: number) {
-    this._uPencilGamma = value
+  set edgeContrast(value: number) {
+    this._uEdgeContrast = value
   }
 
-  get gamma() {
-    return this._uPencilGamma
+  get edgeContrast() {
+    return this._uEdgeContrast
+  }
+
+  set areaContrast(value: number) {
+    this._uAreaContrast = value
+  }
+
+  get areaContrast() {
+    return this._uAreaContrast
   }
 
   get resizes() {

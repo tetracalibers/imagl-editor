@@ -25,7 +25,8 @@
   let SketchCanvas: SketchFilter
 
   let mainFilter: PaleColorPencilFilter
-  let uPencilGamma: number
+  let uEdgeContrast: number
+  let uAreaContrast: number
 
   let locallyMask: LocallyFilterMask
   let mainRadius: number
@@ -54,7 +55,8 @@
     mainRadius = locallyMask.radius
 
     mainFilter = new PaleColorPencilFilter(gl, canvas, plane)
-    uPencilGamma = mainFilter.gamma
+    uEdgeContrast = mainFilter.edgeContrast
+    uAreaContrast = mainFilter.areaContrast
 
     gl.clearColor(1.0, 1.0, 1.0, 1.0)
     gl.clearDepth(1.0)
@@ -143,10 +145,20 @@
 
 <div>
   線の薄さ<Slider
-    bind:value={uPencilGamma}
-    onChange={(v) => (mainFilter.gamma = v)}
+    bind:value={uEdgeContrast}
+    onChange={(v) => (mainFilter.edgeContrast = v)}
     min={0.0}
-    max={3.0}
+    max={1.0}
+    step={0.01}
+  />
+</div>
+
+<div>
+  色の薄さ<Slider
+    bind:value={uAreaContrast}
+    onChange={(v) => (mainFilter.areaContrast = v)}
+    min={0.7}
+    max={1.0}
     step={0.01}
   />
 </div>

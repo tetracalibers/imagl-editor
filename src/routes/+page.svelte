@@ -6,7 +6,7 @@
 <ul>
   <li><a href="/mosaic">モザイク</a></li>
   <li><a href="/pencil">鉛筆によるデッサン画</a></li>
-  <li><a href="/pale-color-pencil">色鉛筆によるデッサン画</a></li>
+  <li><a href="/color-pencil">色鉛筆画</a></li>
   <li><a href="/spray">スプレー画</a></li>
   <li><a href="/stained-glass">ステンドグラス</a></li>
   <li><a href="/stained-glass-2">ステンドグラス2</a></li>

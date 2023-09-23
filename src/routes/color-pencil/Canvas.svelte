@@ -16,7 +16,7 @@
   import Checkbox from "$lib/components/control/Checkbox.svelte"
   import { LocallyFilterMask } from "$lib/filters/locally/locally"
   import { Drag } from "$lib/interactive/drag"
-  import { PaleColorPencilFilter } from "$lib/filters/pale-color-pencil/command"
+  import { PaleColorPencilFilter } from "$lib/filters/color-pencil/command"
   import { ContrastFilter } from "$lib/filters/contrast/command"
 
   let canvas: HTMLCanvasElement

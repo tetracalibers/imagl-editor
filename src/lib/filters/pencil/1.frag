@@ -22,40 +22,6 @@ vec3 rgb2hsv(vec3 c) {
   return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
 }
 
-// fork from https://www.shadertoy.com/view/MsS3Wc
-vec3 hsv2rgb(vec3 color) {
-  // Hueを[0, 1]から[0, 6]へスケール
-  float hue = color.x * 6.0;
-  
-  vec3 m = mod(hue + vec3(0.0, 4.0, 2.0), 6.0);
-  vec3 a = abs(m - 3.0);
-  vec3 rgb = clamp(a - 1.0, 0.0, 1.0);
-    
-  // 白とrgbを彩度（動径）に沿って補間したものに明度をかける
-  return color.z * mix(vec3(1.0), rgb, color.y);
-}
-
-float posterizeHue(float hue, int level) {
-  float hueStep = 255.0 / float(level - 1);
-  
-  float newHue = hue * 360.0;
-  
-  newHue = floor(newHue / hueStep + 0.5) * hueStep;
-  newHue /= 360.0;
-  
-  return newHue;
-}
-
-float posterizeColorRatio(float ratio, int level) {
-  float ratioStep = 255.0 / float(level - 1);
-  
-  float unclamp = ratio * 255.0;
-  float newRatio = floor(unclamp / ratioStep + 0.5) * ratioStep;
-  newRatio /= 255.0;
-  
-  return newRatio;
-}
-
 vec2[9] offset3x3(vec2 texelSize) {
   vec2 offset[9];
   
@@ -119,16 +85,6 @@ void main() {
   
   // 輝度調整
   vec3 outColor1 = pow(inputColor, vec3(uPencilGamma));
-  
-  vec3 hsv = rgb2hsv(outColor1);
-  
-  // HSVによる階調数低減
-  hsv.r = posterizeHue(hsv.r, 256);
-  hsv.g = posterizeColorRatio(hsv.g, 2);
-  hsv.b = posterizeColorRatio(hsv.b, 128);
-  
-  outColor1 = hsv2rgb(hsv);
-  outColor1 = mix(outColor1, vec3(1.0), vec3(0.3, 0.3, 0.3));
   
   /* edge --------------------------------------- */
   

@@ -143,9 +143,8 @@ void main() {
   vec3 posterized = texture(uPosterizeTex, texCoord).rgb;
   vec3 edge = texture(uEdgeTex, texCoord).rgb;
   
-  float grayEdge = toMonochrome(edge);
-  float dx = dFdx(grayEdge);
-  float dy = dFdy(grayEdge);
+  float dx = texelSize.x;
+  float dy = texelSize.y;
   
   float c = hash21(texCoord);
     

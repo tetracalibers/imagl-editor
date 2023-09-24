@@ -84,23 +84,24 @@ in vec2 vTextureCoords;
 out vec4 fragColor;
 
 void main() {
+  ivec2 iTextureSize = textureSize(uPosterizeTex, 0);
+  vec2 textureSize = vec2(float(iTextureSize.x), float(iTextureSize.y));
+  vec2 texelSize = 1.0 / textureSize;
+  
   vec2 texCoord = vec2(vTextureCoords.x, 1.0 - vTextureCoords.y);
   
   vec3 posterized = texture(uPosterizeTex, texCoord).rgb;
   vec3 edge = texture(uEdgeTex, texCoord).rgb;
   
-  float grayEdge = toMonochrome(edge);
-  float dx = dFdx(grayEdge);
-  float dy = dFdy(grayEdge);
-  
-  float magnitude = length(vec2(dx, dy));
+  float dx = texelSize.x;
+  float dy = texelSize.y;
   
   float c = hash21(texCoord);
     
-  vec3 pp = texture(uPosterizeTex, c + vec2(dx, dy) * magnitude).rgb;
-  vec3 mp = texture(uPosterizeTex, c + vec2(-dx, dy) * magnitude).rgb;
-  vec3 pm = texture(uPosterizeTex, c + vec2(dx, -dy) * magnitude).rgb;
-  vec3 mm = texture(uPosterizeTex, c + vec2(-dx, -dy) * magnitude).rgb;
+  vec3 pp = texture(uPosterizeTex, c + vec2(dx, dy)).rgb;
+  vec3 mp = texture(uPosterizeTex, c + vec2(-dx, dy)).rgb;
+  vec3 pm = texture(uPosterizeTex, c + vec2(dx, -dy)).rgb;
+  vec3 mm = texture(uPosterizeTex, c + vec2(-dx, -dy)).rgb;
   
   vec3 hatchR = posterized + mm;
   hatchR -= pp;

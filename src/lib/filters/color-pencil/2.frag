@@ -153,18 +153,15 @@ void main() {
   // ランダムで白を混ぜる
   noisedColor = mix(noisedColor, vec3(uPaperColorBright), hash21(texCoord));
   
-  float grayEdge = toMonochrome(edge);
-  float dx = dFdx(grayEdge);
-  float dy = dFdy(grayEdge);
-  
-  float magnitude = length(vec2(dx, dy));
+  float dx = texelSize.x;
+  float dy = texelSize.y;
   
   float c = hash21(texCoord);
     
-  vec3 pp = texture(uMainTex, c + vec2(dx, dy) * magnitude).rgb;
-  vec3 mp = texture(uMainTex, c + vec2(-dx, dy) * magnitude).rgb;
-  vec3 pm = texture(uMainTex, c + vec2(dx, -dy) * magnitude).rgb;
-  vec3 mm = texture(uMainTex, c + vec2(-dx, -dy) * magnitude).rgb;
+  vec3 pp = texture(uMainTex, c + vec2(dx, dy)).rgb;
+  vec3 mp = texture(uMainTex, c + vec2(-dx, dy)).rgb;
+  vec3 pm = texture(uMainTex, c + vec2(dx, -dy)).rgb;
+  vec3 mm = texture(uMainTex, c + vec2(-dx, -dy)).rgb;
   
   vec3 hatchR = prevColor + mm;
   hatchR -= pp;

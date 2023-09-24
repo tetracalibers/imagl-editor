@@ -7,7 +7,7 @@
   import frag_options from "./options.frag?raw"
   import { PencilFilter } from "$lib/filters/pencil/command"
   import { onMount } from "svelte"
-  import defaultImage from "$lib/images/autumn-leaves_00037.jpg"
+  import defaultImage from "$lib/images/cat.jpg"
   import DownloadButton from "../../components/DownloadButton.svelte"
   import UploadInput from "../../components/UploadInput.svelte"
   import Slider from "$lib/components/control/Slider.svelte"

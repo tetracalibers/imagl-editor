@@ -57,13 +57,13 @@
 
   .layer {
     width: 100%;
-    background-color: var(--on-fg);
+    background-color: var(--off-fg);
     transition: 0.3s ease all;
     z-index: 1;
   }
 
   .knobs:before {
-    content: "ON";
+    content: "OFF";
     position: absolute;
     top: 4px;
     left: 4px;
@@ -75,18 +75,18 @@
     text-align: center;
     line-height: 1;
     padding: 9px 4px;
-    background-color: var(--on-bg);
+    background-color: var(--off-bg);
     border-radius: 50%;
     transition: 0.3s cubic-bezier(0.18, 0.89, 0.35, 1.15) all;
   }
 
   .checkbox:checked + .knobs:before {
-    content: "OFF";
+    content: "ON";
     left: 42px;
-    background-color: var(--off-fg);
+    background-color: var(--on-fg);
   }
 
   .checkbox:checked ~ .layer {
-    background-color: var(--off-bg);
+    background-color: var(--on-bg);
   }
 </style>

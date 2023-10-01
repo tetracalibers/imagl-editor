@@ -54,11 +54,18 @@ export class SketchFilter {
     const { drawOnFrame, drawOnInit, resize, preloaded } = sketch
     this._redraw = drawOnFrame
 
-    const drawOnResize = drawOnFrame || drawOnInit
+    const drawOnResize = () => {
+      if (drawOnFrame) {
+        const { width, height } = context.canvas
+        context.gl.viewport(0, 0, width, height)
+      } else {
+        drawOnInit && drawOnInit()
+      }
+    }
 
     if (autoResize && drawOnResize) {
       resize && context.addAfterResize(...resize)
-      context.addAfterResize(() => drawOnResize)
+      context.addAfterResize(() => drawOnResize())
     }
 
     this._preloaded = preloaded

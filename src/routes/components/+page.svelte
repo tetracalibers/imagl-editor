@@ -6,17 +6,14 @@
   import frag_options from "./simple.frag?raw"
   import { onMount } from "svelte"
   import defaultImage from "$lib/images/autumn-leaves_00037.jpg"
-  import DownloadButton from "../../components/DownloadButton.svelte"
-  import UploadInput from "../../components/UploadInput.svelte"
   import Slider from "$lib/components/control/Slider.svelte"
   import Checkbox from "$lib/components/control/Checkbox.svelte"
   import { SwapFramebufferRenderer } from "$lib/core/swap-fb"
+  import EditorLayout from "../../components/editor-layout.svelte"
 
   let canvas: HTMLCanvasElement
   let download: () => void
   let upload: (img: File, cb?: (src: string) => void) => void
-
-  let currentImg = defaultImage
 
   let SketchCanvas: SketchFilter
 
@@ -69,59 +66,20 @@
   })
 </script>
 
-<div class="container">
-  <div class="sidebar">
-    <DownloadButton onClick={download} />
-    <UploadInput onChange={(file) => upload(file, (src) => (currentImg = src))} />
-    <img class="preview-before" src={currentImg} alt="" />
-    <div>
-      <Checkbox
-        bind:on={editing.main}
-        onChange={(on) => {
-          if (on) {
-            editing.main = true
-          } else {
-            editing.main = false
-          }
-        }}
-      >
-        移動モード
-      </Checkbox>
-      半径<Slider bind:value={sliderValue} min={0} max={1} step={0.01} />
-    </div>
+<EditorLayout bind:canvas currentImage={defaultImage} {upload} {download}>
+  <div slot="controls">
+    <Checkbox
+      bind:on={editing.main}
+      onChange={(on) => {
+        if (on) {
+          editing.main = true
+        } else {
+          editing.main = false
+        }
+      }}
+    >
+      移動モード
+    </Checkbox>
+    半径<Slider bind:value={sliderValue} min={0} max={1} step={0.01} />
   </div>
-  <div class="main-field"><canvas class="canvas" bind:this={canvas} /></div>
-</div>
-
-<style>
-  .container {
-    display: flex;
-    min-height: 100dvh;
-  }
-
-  .sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 1em;
-    max-width: 300px;
-    background-color: var(--color-bg-0);
-    padding: 1em;
-    box-sizing: border-box;
-  }
-
-  .main-field {
-    flex: 1;
-    display: grid;
-    place-items: center;
-  }
-
-  .preview-before {
-    width: 100%;
-    object-fit: contain;
-    margin: 0 auto;
-  }
-
-  .canvas {
-    max-width: 90%;
-  }
-</style>
+</EditorLayout>

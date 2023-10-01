@@ -69,7 +69,6 @@
     left: 4px;
     width: 20px;
     height: 10px;
-    color: #fff;
     font-size: 10px;
     font-weight: bold;
     text-align: center;

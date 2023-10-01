@@ -91,7 +91,7 @@ export class SketchFilter {
     this._firstDraw && this._firstDraw()
   }
 
-  changeImage = async <T extends string | File>(img: T) => {
+  changeImage = async <T extends string | File>(img: T, cb?: (src: string) => void) => {
     const gl = this._context.gl
     const src = typeof img === "string" ? img : URL.createObjectURL(img)
     const texture = new ImageTexture(gl, src)
@@ -100,6 +100,7 @@ export class SketchFilter {
     await texture.load()
     this._context.setFitImage(texture.img)
     this._preloaded && this._preloaded(texture)
+    cb && cb(src)
   }
 
   download = () => {

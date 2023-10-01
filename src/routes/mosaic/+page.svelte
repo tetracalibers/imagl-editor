@@ -6,7 +6,7 @@
   import vert from "$lib/shaders/image.vert?raw"
   import frag_options from "./options.frag?raw"
   import { onMount } from "svelte"
-  import defaultImage from "$lib/images/autumn-leaves_00037.jpg"
+  import defaultImage from "$lib/images/fantasy-unicorn.jpg"
   import Slider from "$lib/components/control/Slider.svelte"
   import { FilterStack } from "$lib/filters/filter-stack"
   import { LocallyMosaicFilter } from "$lib/filters/mosaic/locally"

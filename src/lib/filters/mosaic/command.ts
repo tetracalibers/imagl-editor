@@ -11,7 +11,7 @@ export class MosaicFilter {
 
   protected _width = 0
   protected _height = 0
-  protected _scale = 12
+  protected _scale = 32
 
   active = true
 

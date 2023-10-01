@@ -8,7 +8,7 @@ export class Drag extends Pointer {
 
   private _onMove?: (position: Coordinate) => void
 
-  constructor(el: HTMLElement) {
+  constructor(el: HTMLCanvasElement) {
     super(el)
 
     const { width, height, top, left } = this._rect
@@ -33,11 +33,13 @@ export class Drag extends Pointer {
 
   private _onDragMove(e: MouseEvent | TouchEvent) {
     if (!this._dragging) return
-    if (this.isTouchEvent(e)) {
-      this._position = this.innerPos(...this.touchPos(e))
-    } else {
-      this._position = this.innerPos(...this.mousePos(e))
-    }
+    const canvas = this._el
+    const rect = canvas.getBoundingClientRect()
+    const scaleX = canvas.width / rect.width
+    const scaleY = canvas.height / rect.height
+    const pos = this.isTouchEvent(e) ? this.touchPos(e) : this.mousePos(e)
+    const [x, y] = this.innerPos(...pos)
+    this._position = [x * scaleX, y * scaleY]
     this._onMove?.(this._position)
   }
 

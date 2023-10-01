@@ -1,14 +1,15 @@
 export class Pointer {
-  protected _el: HTMLElement
+  protected _el: HTMLCanvasElement
   protected _rect: DOMRect
 
-  constructor(el: HTMLElement) {
+  constructor(el: HTMLCanvasElement) {
     this._el = el
     this._rect = el.getBoundingClientRect()
   }
 
   protected innerPos = (x: number, y: number): [number, number] => {
-    return [x - this._rect.left, y - this._rect.top]
+    const rect = this._el.getBoundingClientRect()
+    return [x - rect.left, y - rect.top]
   }
 
   protected touchPos = (e: TouchEvent): [number, number] => {

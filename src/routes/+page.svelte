@@ -28,10 +28,10 @@
     <div class="grid">
       <Card
         href="/pale-color-pencil"
-        title="outline"
+        title="pale"
         img={{ src: "/top/pale-color-pencil_cat.png" }}
       />
-      <Card href="/color-pencil" title="fill" img={{ src: "/top/color-pencil_graph.png" }} />
+      <Card href="/color-pencil" title="deep" img={{ src: "/top/color-pencil_cat-2.png" }} />
     </div>
   </section>
 

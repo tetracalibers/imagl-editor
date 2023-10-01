@@ -10,12 +10,13 @@
   import Slider from "$lib/components/control/Slider.svelte"
   import { FilterStack } from "$lib/filters/filter-stack"
   import { BlurFilter } from "$lib/filters/blur/command"
-  import Checkbox from "$lib/components/control/Checkbox.svelte"
   import { ContrastFilter } from "$lib/filters/contrast/command"
   import { VoronoiStainedGlassFilter } from "$lib/filters/voronoi-stained-glass-2/command"
   import { LocallyFilterMask } from "$lib/filters/locally/locally"
   import { Drag } from "$lib/interactive/drag"
   import EditorLayout from "../../components/editor-layout.svelte"
+  import ControlItem from "$lib/components/control/control-item.svelte"
+  import Switch from "$lib/components/control/Switch.svelte"
 
   let canvas: HTMLCanvasElement
   let download: () => void
@@ -128,9 +129,9 @@
 </script>
 
 <EditorLayout bind:canvas currentImage={defaultImage} {upload} {download}>
-  <div slot="controls">
-    <div>
-      <Checkbox
+  <svelte:fragment slot="controls">
+    <ControlItem title="移動モード">
+      <Switch
         bind:on={editing.main}
         onChange={(on) => {
           if (on) {
@@ -139,11 +140,10 @@
             editing.main = false
           }
         }}
-      >
-        移動モード
-      </Checkbox>
-
-      半径<Slider
+      />
+    </ControlItem>
+    <ControlItem title="半径">
+      <Slider
         bind:value={mainRadius}
         onChange={(v) => {
           locallyMask.radius = v
@@ -152,73 +152,64 @@
         max={1}
         step={0.01}
       />
-    </div>
-
-    <div>
-      モザイクの強さ<Slider
+    </ControlItem>
+    <ControlItem title="モザイクの強さ">
+      <Slider
         bind:value={uVoronoiMixRatio}
         onChange={(v) => (mainFilter.uVoronoiMixRatio = v)}
         min={0.5}
         max={1}
         step={0.01}
       />
-    </div>
-    <div>
-      ガラスの色の濃さ<Slider
+    </ControlItem>
+    <ControlItem title="ガラスの色の濃さ">
+      <Slider
         bind:value={uRandomMixRatio}
         onChange={(v) => (mainFilter.uRandomMixRatio = v)}
         min={0.01}
         max={1}
         step={0.01}
       />
-    </div>
-    <div>
-      ガラスの背後の明るさ<Slider
+    </ControlItem>
+    <ControlItem title="ガラスの背後の明るさ">
+      <Slider
         bind:value={uGlowScale}
         onChange={(v) => (mainFilter.uGlowScale = v)}
         min={0.01}
         max={1}
         step={0.01}
       />
-    </div>
-    <div>
-      モザイクの細かさ<Slider
+    </ControlItem>
+    <ControlItem title="モザイクの細かさ">
+      <Slider
         bind:value={uVoronoiSiteCount}
         onChange={(v) => (mainFilter.uVoronoiSiteCount = v)}
         min={3}
         max={100}
         step={1}
       />
-    </div>
-    <Checkbox
-      bind:on={uShowVoronoiStroke}
-      onChange={(on) => {
-        mainFilter.uShowVoronoiStroke = on
-      }}
-    >
-      モザイクの境界線を表示
-    </Checkbox>
-    <Checkbox
-      bind:on={uApplyEmboss}
-      onChange={(on) => {
-        mainFilter.uApplyEmboss = on
-      }}
-    >
-      エンボス加工
-    </Checkbox>
-
-    <div>
-      透明度<Slider
-        bind:value={uAlpha}
-        onChange={(v) => (uAlpha = v)}
-        min={0}
-        max={1}
-        step={0.01}
+    </ControlItem>
+    <ControlItem title="モザイクの境界線">
+      <Switch
+        bind:on={uShowVoronoiStroke}
+        onChange={(on) => {
+          mainFilter.uShowVoronoiStroke = on
+        }}
       />
-    </div>
-
-    <div>
-      <Checkbox
+    </ControlItem>
+    <ControlItem title="エンボス加工">
+      <Switch
+        bind:on={uApplyEmboss}
+        onChange={(on) => {
+          mainFilter.uApplyEmboss = on
+        }}
+      />
+    </ControlItem>
+    <ControlItem title="透明度">
+      <Slider bind:value={uAlpha} onChange={(v) => (uAlpha = v)} min={0} max={1} step={0.01} />
+    </ControlItem>
+    <ControlItem title="コントラスト調整">
+      <Switch
         bind:on={contrast.active}
         onChange={(on) => {
           if (on) {
@@ -227,9 +218,9 @@
             filterStack.deactive("contrast")
           }
         }}
-      >
-        Contrast
-      </Checkbox>
+      />
+    </ControlItem>
+    <ControlItem title="コントラスト">
       <Slider
         bind:value={contrast.uContrastGamma}
         disabled={!contrast.active}
@@ -237,10 +228,9 @@
         max={10}
         step={0.1}
       />
-    </div>
-
-    <div>
-      <Checkbox
+    </ControlItem>
+    <ControlItem title="ぼかし">
+      <Switch
         bind:on={blurX.active}
         onChange={(on) => {
           if (on) {
@@ -251,9 +241,9 @@
             filterStack.deactive("blurY")
           }
         }}
-      >
-        Blur
-      </Checkbox>
+      />
+    </ControlItem>
+    <ControlItem title="ぼかしの強さ">
       <Slider
         bind:value={blurX.uBlurSigma}
         onChange={(v) => {
@@ -265,6 +255,6 @@
         max={1}
         step={0.01}
       />
-    </div>
-  </div>
+    </ControlItem>
+  </svelte:fragment>
 </EditorLayout>

@@ -7,9 +7,10 @@
   import { onMount } from "svelte"
   import defaultImage from "$lib/images/autumn-leaves_00037.jpg"
   import Slider from "$lib/components/control/Slider.svelte"
-  import Checkbox from "$lib/components/control/Checkbox.svelte"
   import { SwapFramebufferRenderer } from "$lib/core/swap-fb"
   import EditorLayout from "../../components/editor-layout.svelte"
+  import Switch from "$lib/components/control/Switch.svelte"
+  import ControlItem from "$lib/components/control/control-item.svelte"
 
   let canvas: HTMLCanvasElement
   let download: () => void
@@ -67,19 +68,21 @@
 </script>
 
 <EditorLayout bind:canvas currentImage={defaultImage} {upload} {download}>
-  <div slot="controls">
-    <Checkbox
-      bind:on={editing.main}
-      onChange={(on) => {
-        if (on) {
-          editing.main = true
-        } else {
-          editing.main = false
-        }
-      }}
-    >
-      移動モード
-    </Checkbox>
-    半径<Slider bind:value={sliderValue} min={0} max={1} step={0.01} />
-  </div>
+  <svelte:fragment slot="controls">
+    <ControlItem title="移動モード">
+      <Switch
+        bind:on={editing.main}
+        onChange={(on) => {
+          if (on) {
+            editing.main = true
+          } else {
+            editing.main = false
+          }
+        }}
+      />
+    </ControlItem>
+    <ControlItem title="半径">
+      <Slider bind:value={sliderValue} min={0} max={1} step={0.01} />
+    </ControlItem>
+  </svelte:fragment>
 </EditorLayout>

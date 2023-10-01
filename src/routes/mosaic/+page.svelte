@@ -9,11 +9,12 @@
   import defaultImage from "$lib/images/autumn-leaves_00037.jpg"
   import Slider from "$lib/components/control/Slider.svelte"
   import { FilterStack } from "$lib/filters/filter-stack"
-  import Checkbox from "$lib/components/control/Checkbox.svelte"
   import { LocallyMosaicFilter } from "$lib/filters/mosaic/locally"
   import { MosaicAreaController } from "$lib/filters/mosaic/control"
   import { ContrastFilter } from "$lib/filters/contrast/command"
   import EditorLayout from "../../components/editor-layout.svelte"
+  import Switch from "$lib/components/control/Switch.svelte"
+  import ControlItem from "$lib/components/control/control-item.svelte"
 
   let canvas: HTMLCanvasElement
   let download: () => void
@@ -22,7 +23,6 @@
   let SketchCanvas: SketchFilter
 
   let mosaicFilter: LocallyMosaicFilter
-  let mosaicActive: boolean
   let mosaicScale: number
   let mosaicRadius: number
 
@@ -46,7 +46,6 @@
     const stackRenderer = new SwapFramebufferRenderer(gl, canvas)
 
     mosaicFilter = new LocallyMosaicFilter(gl, canvas, plane)
-    mosaicActive = mosaicFilter.active
     mosaicScale = mosaicFilter.scale
     mosaicRadius = mosaicFilter.radius
     mosaicController = new MosaicAreaController(canvas, mosaicFilter)
@@ -71,7 +70,7 @@
         plane.draw({ primitive: "TRIANGLES" })
         stackRenderer.endPath()
 
-        mosaicActive && mosaicFilter.applyLocally(programForOptions, stackRenderer)
+        mosaicFilter.applyLocally(programForOptions, stackRenderer)
 
         filterStack.activeAfterFilters.forEach((filter) => {
           stackRenderer.beginPath()
@@ -104,10 +103,9 @@
 </script>
 
 <EditorLayout bind:canvas currentImage={defaultImage} {upload} {download}>
-  <div slot="controls">
-    <div>
-      <Checkbox bind:on={mosaicActive}>モザイク</Checkbox>
-      <Checkbox
+  <svelte:fragment slot="controls">
+    <ControlItem title="移動モード">
+      <Switch
         bind:on={mosaicEditing}
         onChange={(on) => {
           if (on) {
@@ -116,34 +114,33 @@
             mosaicController.editing = false
           }
         }}
-        disabled={!mosaicActive}
-      >
-        移動モード
-      </Checkbox>
-      モザイクの強度<Slider
+      />
+    </ControlItem>
+    <ControlItem title="モザイクの強度">
+      <Slider
         bind:value={mosaicScale}
         onChange={(v) => {
           mosaicFilter.setReduceRate(v)
         }}
-        disabled={!mosaicActive}
         min={2}
         max={50}
         step={2}
       />
-      モザイクの半径<Slider
+    </ControlItem>
+    <ControlItem title="モザイクの半径">
+      <Slider
         bind:value={mosaicRadius}
         onChange={(v) => {
           mosaicFilter.radius = v
         }}
-        disabled={!mosaicActive}
         min={0}
         max={1}
         step={0.01}
       />
-    </div>
+    </ControlItem>
 
-    <div>
-      <Checkbox
+    <ControlItem title="コントラスト調整">
+      <Switch
         bind:on={contrast.active}
         onChange={(on) => {
           if (on) {
@@ -152,9 +149,9 @@
             filterStack.deactive("contrast")
           }
         }}
-      >
-        Contrast
-      </Checkbox>
+      />
+    </ControlItem>
+    <ControlItem title="コントラスト">
       <Slider
         bind:value={contrast.uContrastGamma}
         disabled={!contrast.active}
@@ -162,6 +159,6 @@
         max={5}
         step={0.1}
       />
-    </div>
-  </div>
+    </ControlItem>
+  </svelte:fragment>
 </EditorLayout>

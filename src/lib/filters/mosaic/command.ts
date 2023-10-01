@@ -13,7 +13,7 @@ export class MosaicFilter {
   protected _height = 0
   protected _scale = 12
 
-  active = false
+  active = true
 
   constructor(gl: WebGL2RenderingContext, canvas: HTMLCanvasElement, screen: CanvasCoverPolygon) {
     this._gl = gl

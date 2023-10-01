@@ -16,5 +16,6 @@
     background-color: var(--bg-color);
     padding: 0.5em 1em;
     text-transform: uppercase;
+    cursor: pointer;
   }
 </style>

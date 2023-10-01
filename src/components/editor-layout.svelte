@@ -6,13 +6,19 @@
   export let currentImage: string
   export let upload: (img: File, cb?: (src: string) => void) => void
   export let download: () => void
+
+  let img: HTMLImageElement
 </script>
 
 <div class="container">
   <div class="sidebar">
     <DownloadButton onClick={download} />
-    <UploadInput onChange={(file) => upload(file, (src) => (currentImage = src))} />
-    <img class="preview-before" src={currentImage} alt="" />
+    <UploadInput
+      onChange={(file) => {
+        upload(file, (src) => (img.src = src))
+      }}
+    />
+    <img class="preview-before" bind:this={img} src={currentImage} alt="" />
     <slot name="controls" />
   </div>
   <div class="main-field"><canvas class="canvas" bind:this={canvas} /></div>

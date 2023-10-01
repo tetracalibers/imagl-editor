@@ -35,7 +35,7 @@
     flex-direction: column;
     gap: 1em;
     max-width: 300px;
-    background-color: var(--color-bg-0);
+    background-color: #fff;
     padding: 1em;
     box-sizing: border-box;
   }
@@ -44,6 +44,12 @@
     flex: 1;
     display: grid;
     place-items: center;
+    background: #faffff;
+    background-image: linear-gradient(#9fc9c7 1.5px, rgba(255, 255, 255, 0) 0),
+      linear-gradient(90deg, #9fc9c7 1.5px, rgba(255, 255, 255, 0) 0),
+      linear-gradient(#bbcacf 1.5px, rgba(255, 255, 255, 0) 0),
+      linear-gradient(90deg, #bbcacf 1.5px, rgba(255, 255, 255, 0) 0);
+    background-size: 75px 75px, 75px 75px, 15px 15px, 15px 15px;
   }
 
   .preview-before {

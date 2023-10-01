@@ -7,12 +7,14 @@
 
 <style>
   .download-button {
-    --button-color: #ef9595;
+    --bg-color: #fff;
+    --fg-color: #123ba4;
     appearance: none;
-    border: 0;
+    border: 1px solid var(--fg-color);
+    color: var(--fg-color);
     border-radius: 10px;
-    background-color: var(--button-color);
-    box-shadow: var(--button-color) 0 10px 20px -10px;
+    background-color: var(--bg-color);
     padding: 0.5em 1em;
+    text-transform: uppercase;
   }
 </style>

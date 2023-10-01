@@ -20,24 +20,27 @@
 
 <style>
   .upload-area {
+    --bg-color: #fff;
+    --fg-color: #123ba4;
     position: relative;
     display: flex;
     align-items: center;
     max-width: 100%;
-    border: 2px dashed #8ddfcb;
+    border: 1px solid var(--fg-color);
     border-radius: 10px;
+    color: var(--fg-color);
     padding: 0.5em;
     gap: 0.5em;
   }
 
   .button {
-    --button-color: #8ddfcb;
     display: inline-block;
-    background-color: var(--button-color);
-    box-shadow: var(--button-color) 0 10px 20px -10px;
+    background-color: var(--bg-color);
+    border: 1px dashed var(--fg-color);
     border-radius: 7px;
     padding: 0.5em 1em;
-    text-transform: capitalize;
+    text-transform: uppercase;
+    cursor: pointer;
   }
 
   .hint {

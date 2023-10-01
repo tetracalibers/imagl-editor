@@ -7,42 +7,50 @@
   <meta name="description" content="Svelte demo app" />
 </svelte:head>
 
-<section>
-  <h2 class="group-name">mosaic</h2>
-  <div class="grid">
-    <Card href="/mosaic" title="normal" img={{ src: "/top/mosaic-unicorn.png" }} />
-    <Card href="/watercolor" title="voronoi" img={{ src: "/top/voronoi_unicorn.png" }} />
-  </div>
-</section>
+<div class="container">
+  <section>
+    <h2 class="group-name">mosaic</h2>
+    <div class="grid">
+      <Card href="/mosaic" title="normal" img={{ src: "/top/mosaic-unicorn.png" }} />
+      <Card href="/watercolor" title="voronoi" img={{ src: "/top/voronoi_unicorn.png" }} />
+    </div>
+  </section>
 
-<section>
-  <h2 class="group-name">pencil</h2>
-  <div class="grid">
-    <Card href="/pencil" title="sketch" img={{ src: "/top/pencil_cat.png" }} />
-  </div>
-</section>
+  <section>
+    <h2 class="group-name">pencil</h2>
+    <div class="grid">
+      <Card href="/pencil" title="sketch" img={{ src: "/top/pencil_cat.png" }} />
+    </div>
+  </section>
 
-<section>
-  <h2 class="group-name">color pencil</h2>
-  <div class="grid">
-    <Card
-      href="/pale-color-pencil"
-      title="outline"
-      img={{ src: "/top/pale-color-pencil_cat.png" }}
-    />
-    <Card href="/color-pencil" title="fill" img={{ src: "/top/color-pencil_graph.png" }} />
-  </div>
-</section>
+  <section>
+    <h2 class="group-name">color pencil</h2>
+    <div class="grid">
+      <Card
+        href="/pale-color-pencil"
+        title="outline"
+        img={{ src: "/top/pale-color-pencil_cat.png" }}
+      />
+      <Card href="/color-pencil" title="fill" img={{ src: "/top/color-pencil_graph.png" }} />
+    </div>
+  </section>
 
-<section>
-  <h2 class="group-name">stained glass</h2>
-  <div class="grid">
-    <Card href="/stained-glass-2" title="normal" img={{ src: "/top/standglass_leaves.png" }} />
-    <Card href="/stained-glass" title="light" img={{ src: "/top/standglass-light_leaves.png" }} />
-  </div>
-</section>
+  <section>
+    <h2 class="group-name">stained glass</h2>
+    <div class="grid">
+      <Card href="/stained-glass-2" title="normal" img={{ src: "/top/standglass_leaves.png" }} />
+      <Card href="/stained-glass" title="light" img={{ src: "/top/standglass-light_leaves.png" }} />
+    </div>
+  </section>
+</div>
 
 <style>
+  .container {
+    padding: 1rem;
+    max-width: 64rem;
+    margin: 0 auto;
+  }
+
   section + section {
     margin-top: 4rem;
   }

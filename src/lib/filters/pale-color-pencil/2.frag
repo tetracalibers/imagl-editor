@@ -46,18 +46,6 @@ float hash21(vec2 b) {
   return float(uhash22(n).x) / float(UINT_MAX);
 }
 
-float hash21Clamp(vec2 b, float minV, float maxV) {
-  return ((maxV - minV) * hash21(b)) + minV;
-}
-
-vec3 lighten(vec3 b, vec3 f) {
-  return max(b, f);
-}
-
-vec3 screen(vec3 b, vec3 f) {
-  return 1.0 - (1.0 - b) * (1.0 - f);
-}
-
 vec3 overlay(vec3 b, vec3 f) {
   float bmpness = max(b.r, max(b.g, b.b));
   
@@ -66,14 +54,6 @@ vec3 overlay(vec3 b, vec3 f) {
     1.0 - 2.0 * (1.0 - b) * (1.0 - f),
     step(0.5, bmpness)
   );
-}
-
-vec3 colorburn(vec3 b, vec3 f) {
-  return 1.0 - (1.0 - b) / f;
-}
-
-vec3 colordodge(vec3 b, vec3 f) {
-  return b / (1.0 - f);
 }
 
 vec2 clamp_range(vec2 v, vec2 minV, vec2 maxV) {

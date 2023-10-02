@@ -12,7 +12,7 @@
     <h2 class="group-name">mosaic</h2>
     <div class="grid">
       <Card href="/mosaic" title="normal" img={{ src: "/top/mosaic-unicorn.png" }} />
-      <Card href="/watercolor" title="voronoi" img={{ src: "/top/voronoi_unicorn.png" }} />
+      <Card href="/voronoi-mosaic" title="voronoi" img={{ src: "/top/voronoi_unicorn.png" }} />
     </div>
   </section>
 

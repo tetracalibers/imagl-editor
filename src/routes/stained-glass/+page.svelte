@@ -11,7 +11,7 @@
   import { FilterStack } from "$lib/filters/filter-stack"
   import { BlurFilter } from "$lib/filters/blur/command"
   import { ContrastFilter } from "$lib/filters/contrast/command"
-  import { VoronoiStainedGlassFilter } from "$lib/filters/voronoi-stained-glass-2/command"
+  import { VoronoiStainedGlassFilter } from "$lib/filters/stained-glass/command"
   import { LocallyFilterMask } from "$lib/filters/locally/locally"
   import { Drag } from "$lib/interactive/drag"
   import EditorLayout from "$lib/components/layout/editor-layout.svelte"

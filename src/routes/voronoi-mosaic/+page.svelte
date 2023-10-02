@@ -10,7 +10,7 @@
   import Slider from "$lib/components/control/Slider.svelte"
   import { FilterStack } from "$lib/filters/filter-stack"
   import { BlurFilter } from "$lib/filters/blur/command"
-  import { VoronoiWatercolorFilter } from "$lib/filters/watercolor/command"
+  import { VoronoiWatercolorFilter } from "$lib/filters/voronoi-mosaic/command"
   import { ContrastFilter } from "$lib/filters/contrast/command"
   import { LocallyFilterMask } from "$lib/filters/locally/locally"
   import { Drag } from "$lib/interactive/drag"

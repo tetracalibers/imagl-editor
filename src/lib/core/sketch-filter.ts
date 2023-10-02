@@ -112,10 +112,11 @@ export class SketchFilter {
       document.body.appendChild($a)
       $a.style.display = "none"
       return function saveData(blob: Blob, fileName: string) {
-        const url = window.URL.createObjectURL(blob)
+        const url = URL.createObjectURL(blob)
         $a.href = url
         $a.download = fileName
         $a.click()
+        URL.revokeObjectURL(url)
       }
     })()
 

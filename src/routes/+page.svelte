@@ -39,7 +39,11 @@
     <h2 class="group-name">stained glass</h2>
     <div class="grid">
       <Card href="/stained-glass-2" title="normal" img={{ src: "/top/standglass_leaves.png" }} />
-      <Card href="/stained-glass" title="light" img={{ src: "/top/standglass-light_leaves.png" }} />
+      <Card
+        href="/stained-glass-light"
+        title="light"
+        img={{ src: "/top/standglass-light_leaves.png" }}
+      />
     </div>
   </section>
 </div>

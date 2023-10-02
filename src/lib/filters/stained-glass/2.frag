@@ -46,14 +46,6 @@ vec3 smooth3x3(sampler2D tex, vec2 texelSize, vec2 center) {
   return result;
 }
 
-vec3 color_dodge(vec3 base, vec3 blend) {
-  return blend / (1.0 - base);
-}
-
-vec3 color_burn(vec3 base, vec3 blend) {
-  return 1.0 - (1.0 - blend) / base;
-}
-
 vec3 overlay(vec3 base, vec3 blend) {
   float brightness = max(base.r, max(base.g, base.b));
   return mix(
@@ -63,26 +55,9 @@ vec3 overlay(vec3 base, vec3 blend) {
   );
 }
 
-vec3 screen(vec3 base, vec3 blend) {
-  return 1.0 - (1.0 - base) * (1.0 - blend);
-}
-
-vec3 lighten(vec3 base, vec3 blend) {
-  return max(base, blend);
-}
-
-vec3 difference(vec3 base, vec3 blend) {
-  return abs(base - blend);
-}
-
 vec3 add(vec3 base, vec3 blend) {
   return min(base + blend, vec3(1.0));
 }
-
-vec3 multiply(vec3 base, vec3 blend) {
-  return base * blend;
-}
-
 vec4 roberts(sampler2D tex, vec2 uv, vec2 texelSize) {
   vec2 offset[4];
   offset[0] = vec2(texelSize.x, 0.0);

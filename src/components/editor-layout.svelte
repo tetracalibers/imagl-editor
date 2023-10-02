@@ -27,7 +27,6 @@
 <style>
   .container {
     display: flex;
-    min-height: 100dvh;
   }
 
   .sidebar {
@@ -38,6 +37,8 @@
     background-color: #fff;
     padding: 1em;
     box-sizing: border-box;
+    height: 100dvh;
+    overflow-y: auto;
   }
 
   .main-field {
@@ -50,6 +51,7 @@
       linear-gradient(#bbcacf 1.5px, rgba(255, 255, 255, 0) 0),
       linear-gradient(90deg, #bbcacf 1.5px, rgba(255, 255, 255, 0) 0);
     background-size: 75px 75px, 75px 75px, 15px 15px, 15px 15px;
+    max-height: 100dvh;
   }
 
   .preview-before {

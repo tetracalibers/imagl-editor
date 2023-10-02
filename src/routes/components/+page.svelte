@@ -8,7 +8,7 @@
   import defaultImage from "$lib/images/autumn-leaves_00037.jpg"
   import Slider from "$lib/components/control/Slider.svelte"
   import { SwapFramebufferRenderer } from "$lib/core/swap-fb"
-  import EditorLayout from "../../components/editor-layout.svelte"
+  import EditorLayout from "$lib/components/layout/editor-layout.svelte"
   import Switch from "$lib/components/control/Switch.svelte"
   import ControlItem from "$lib/components/control/control-item.svelte"
 

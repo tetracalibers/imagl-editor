@@ -12,7 +12,7 @@
   import { LocallyMosaicFilter } from "$lib/filters/mosaic/locally"
   import { MosaicAreaController } from "$lib/filters/mosaic/control"
   import { ContrastFilter } from "$lib/filters/contrast/command"
-  import EditorLayout from "../../components/editor-layout.svelte"
+  import EditorLayout from "$lib/components/layout/editor-layout.svelte"
   import Switch from "$lib/components/control/Switch.svelte"
   import ControlItem from "$lib/components/control/control-item.svelte"
 

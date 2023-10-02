@@ -1,6 +1,6 @@
 <script lang="ts">
-  import DownloadButton from "./DownloadButton.svelte"
-  import UploadInput from "./UploadInput.svelte"
+  import DownloadButton from "$lib/components/control/DownloadButton.svelte"
+  import UploadInput from "$lib/components/control/UploadInput.svelte"
 
   export let canvas: HTMLCanvasElement
   export let currentImage: string

@@ -14,7 +14,7 @@
   import { VoronoiStainedGlassFilter } from "$lib/filters/voronoi-stained-glass/command"
   import { LocallyFilterMask } from "$lib/filters/locally/locally"
   import { Drag } from "$lib/interactive/drag"
-  import EditorLayout from "../../components/editor-layout.svelte"
+  import EditorLayout from "$lib/components/layout/editor-layout.svelte"
   import ControlItem from "$lib/components/control/control-item.svelte"
   import Switch from "$lib/components/control/Switch.svelte"
 

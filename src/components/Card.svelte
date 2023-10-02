@@ -1,11 +1,13 @@
 <script lang="ts">
+  import { base } from "$app/paths"
+
   export let title: string
   export let img: { src: string; alt?: string }
   export let href: string
 </script>
 
-<a class="Card" {href}>
-  <img class="image" src={img.src} alt={img.alt ?? ""} />
+<a class="Card" href={base + href}>
+  <img class="image" src={base + img.src} alt={img.alt ?? ""} />
   <h3 class="title">
     {title}
   </h3>

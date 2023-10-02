@@ -31,6 +31,7 @@
 
   .container {
     display: flex;
+    height: 100dvh;
   }
 
   .sidebar {
@@ -66,5 +67,28 @@
 
   .canvas {
     max-width: 90%;
+  }
+
+  @media (width < 700px) {
+    .container {
+      flex-direction: column;
+    }
+
+    .sidebar {
+      order: 2;
+      max-width: 100%;
+      padding-block: 2em;
+      padding-inline: 15%;
+      height: 100%;
+      overflow-y: visible;
+    }
+
+    .main-field {
+      padding: 2em 1em;
+    }
+
+    .preview-before {
+      order: -1;
+    }
   }
 </style>

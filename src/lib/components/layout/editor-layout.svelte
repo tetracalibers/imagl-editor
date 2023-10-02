@@ -79,7 +79,7 @@
       max-width: 100%;
       padding-block: 2em;
       padding-inline: 15%;
-      height: 100%;
+      height: fit-content;
       overflow-y: visible;
     }
 

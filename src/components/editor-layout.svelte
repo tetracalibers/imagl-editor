@@ -25,6 +25,10 @@
 </div>
 
 <style>
+  :global(body):has(canvas) {
+    overscroll-behavior: none;
+  }
+
   .container {
     display: flex;
   }
